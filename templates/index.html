@@ -27,7 +27,7 @@
     .then(res => res.json())
     .then(data => {
         if (data.status === "success") {
-            window.location.href = "profile1.html";  
+            window.location.href = "{{ url_for('check') }}";
         } else {
             alert("Invalid UID or Password");
         }
