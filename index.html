@@ -13,7 +13,7 @@
     function check() {
      const uid = document.querySelector("#name1").value;
      const password = document.querySelector("#name2").value;
-      window.location.href = "profile1.html";  
+      window.location.href = "{{ url_for('check') }}";  
       localStorage.setItem("name1",uid);
       localStorage.setItem("name2",password);
       }
