@@ -53,6 +53,10 @@ def login():
 def home():
     return render_template("index.html")
 
+@app.route("/profile1")
+def profile1():
+    return render_template("profile1.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
 
