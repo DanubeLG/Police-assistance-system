@@ -31,13 +31,13 @@
     .then(res => res.json())
     .then(data => {
         if (data=== "police") {
-            window.location.href = "{{ url_for('check') }}";
+            window.location.href = "/police";
         } 
          else if (data=== "detective") {
-            window.location.href = "{{ url_for('check') }}";
+            window.location.href = "/detective";
         } 
           else if (data=== "crime_analyst") {
-            window.location.href = "{{ url_for('check') }}";
+            window.location.href = "/crime_analyst";
         } else {
             alert("Invalid details);
         }
