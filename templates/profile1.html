@@ -27,7 +27,31 @@
   localStorage.setItem("username1", name);
   localStorage.setItem("username2", mail);
 
-  window.location.href = "police.html";
+   fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            post: post
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data=== "police") {
+            window.location.href = "{{ url_for('check') }}";
+        } 
+         else if (data=== "detective") {
+            window.location.href = "{{ url_for('check') }}";
+        } 
+          else if (data=== "crime_analyst") {
+            window.location.href = "{{ url_for('check') }}";
+        } else {
+            alert("Invalid details);
+        }
+    })
+    .catch(err => console.error(err));
+ }
 }
 
 function upload(id) {
