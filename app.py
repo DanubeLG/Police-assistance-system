@@ -58,15 +58,15 @@ def check():
     return render_template("profile1.html")
 
 @app.route("/police")
-def check1():
+def check():
     return render_template("profile1.html")
 
 @app.route("/detective")
-def check2():
+def check():
     return render_template("profile1.html")
 
 @app.route("/crime_analyst")
-def check3():
+def check():
     return render_template("profile1.html")
 
 @app.route("/FIR")
