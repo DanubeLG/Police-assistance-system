@@ -57,6 +57,18 @@ def home():
 def check():
     return render_template("profile1.html")
 
+@app.route("/police")
+def check():
+    return render_template("check1.html")
+
+@app.route("/detective")
+def check():
+    return render_template("check1.html")
+
+@app.route("/crime_analyst")
+def check():
+    return render_template("check1.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
 
