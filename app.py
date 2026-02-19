@@ -58,7 +58,7 @@ def check():
     return render_template("profile1.html")
 
 @app.route("/chatbot")
-def check():
+def check1():
     return render_template("chatbot.html")
 
 
