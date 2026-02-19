@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="styles.css">
     <title>Policeman</title></head>
   <body>
     <div class="b">
@@ -18,42 +18,18 @@
   <button type="button" onclick="upload('signInput')">UPLOAD</button>
   <input type="file" id="signInput" accept="image/png, image/jpeg" hidden>
       </li></ol><br>
-      <button onclick="check1()">SUBMIT</button></div>
+      <button onclick="check()">SUBMIT</button></div>
     <script>
-     function check1() {
+     function check() {
   let name = document.getElementById("a").value;
   let mail = document.getElementById("1").value;
 
   localStorage.setItem("username1", name);
   localStorage.setItem("username2", mail);
 
-fetch("http://127.0.0.1:5000/login", {
-    method: "GET",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ post: post })  
-})
-.then(res => res.json())
-.then(data => {
+  window.location.href = "chatbot.html";
+}
 
-    if (data.role === "police") {
-        window.location.href = "/police";
-    } 
-    else if (data.role === "detective") {
-        window.location.href = "/detective";
-    } 
-    else if (data.role === "crime_analyst") {
-        window.location.href = "/crime_analyst";
-    } 
-    else {
-        alert("Invalid details");
-    }
-
-})
-.catch(err => console.error(err));
-                                   }
-       
 function upload(id) {
   document.getElementById(id).click();
 }
