@@ -57,6 +57,11 @@ def home():
 def check():
     return render_template("profile1.html")
 
+@app.route("/chatbot")
+def check():
+    return render_template("chatbot.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
 
