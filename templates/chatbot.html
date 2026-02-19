@@ -129,6 +129,17 @@
 
 
 <script>
+
+let el1=document.getElementById("ds");
+let el2=document.getElementById("de");
+  
+
+let img1=localStorage.getItem("profilePic");
+let img2=localStorage.getItem("signaturePic");
+
+el1.src=img1;
+el2.src=img2;
+  
 let caseData = {};
 let policeMode = { active: false };
 
