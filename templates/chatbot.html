@@ -1,50 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <title>ANVESHAN INTELLIGENCE</title>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    input, select, textarea { margin-bottom: 10px; padding: 5px; width: 100%; }
-    button { padding: 8px 12px; margin-top: 5px; cursor: pointer; }
-    .suspect-section { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-    #output { margin-top: 20px; padding: 10px; border: 1px solid #aaa; background: #f9f9f9; }
-  </style>
 </head>
 
 <body>
 
-  <div style="width:450px; height:1000px; background-color:#215F9A; left:0; top:0; position:fixed;">
-    <img width="400" height="400" src="AI.png">
-    <div style="margin-left:20px;">
+  <div class="layout">
+
+    <div class="side">
       <ol id="y"></ol>
     </div>
-  </div>
 
-  <div style="width:450px; height:1000px; background-color:#215F9A; right:0; top:0; position:fixed;">
-    <div style="right:7%; top:10%; position:fixed;">
-      <img id="ds" width="200" height="250"><br><br><br><br>
-      Name:<p id="k"></p><br><br>
-      Contact:<p id="l"></p><br><br>
-      Email:<p id="m"></p><br><br>
-      Signature:<br><br>
-      <img id="de" width="200" height="100">
-    </div>
-  </div>
+    <div class="center">
+      <div class="form-box">
 
-  <div style="position:fixed; bottom:5%; right:30%;">
-    <input id="chatInput" style="width:600px; background-color:#BDC7D1; padding:10px; border-radius:20px;">
-    <button onclick="caseController()">→</button>
-  </div>
-
-  <div style="bottom:0; position:fixed; left:0;width:100%;background-color:blue;color:white;display:flex;justify-content:center;align-items:center;padding:10px;text-align:center;">
-    Anveshan Intelligence can make mistakes, please use it carefully.
-  </div>
-
-  <div style="display:flex; justify-content:center;">
-    <div class="x" style="width:600px; display:flex; flex-direction:column; gap:30px; margin-top:50px; height:800px">
-
-      <div style="display:flex; flex-direction:column;">
-        <h2>Hi, please fill out these details</h2>
+        <h2 style="text-align:center;">Hi, please fill out these details</h2>
 
         <ol id="details">
           <li>Complainant Name: <input id="complainantName"></li>
@@ -52,7 +25,7 @@
           <li>DOB: <input type="date" id="dob"></li>
           <li>Nationality: <input id="nation"></li>
           <li>Occupation: <input></li>
-          <li>Age: <input type="number" id="age"></li>
+          <li>Age: <input type="number" min="13" id="age"></li>
 
           <li>Gender:
             <select>
@@ -64,13 +37,14 @@
           </li>
 
           <li>Address: <input id="address"></li>
-          <li>Phone/Email: <input></li>
+          <li>Phone: <input type="tel" pattern="\+91[0-9]{10}" placeholder="+911234567890" required></li>
 
           <li>Holiday:
             <select id="holiday">
               <option value="">Select</option>
-              <option>yes</option>
-              <option>no</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>No idea</option>
             </select>
           </li>
 
@@ -79,8 +53,9 @@
           <li>Festival:
             <select id="festival">
               <option value="">Select</option>
-              <option>yes</option>
-              <option>no</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>No idea</option>
             </select>
           </li>
 
@@ -106,29 +81,101 @@
           <option value="">Select</option>
           <option value="yes">Yes</option>
           <option value="no">No</option>
+          <option value="probably">Probably</option>
         </select>
 
         <div id="dynamicSection"></div>
-
         <div id="suspectInterviewSection"></div>
 
-        <br><br>
-
-        <button onclick="create()">Generate FIR</button>
-        <button onclick="caseController()">Run Investigation</button>
+        <button id="x" onclick="create()">Generate FIR</button>
+        <button id="v" onclick="caseController()">Run Investigation</button>
 
         <div id="output"></div>
 
       </div>
     </div>
+
+    <div class="side">
+      <div class="profile-box">
+        <img id="ds" style="border-radius:50px;"><br><br>
+
+        <b>Name:</b>
+        <p id="k"></p>
+
+        <b>📞:</b>
+        <p id="l"></p>
+
+        <b>✉:</b>
+        <p id="m"></p>
+
+        <b>Signature:</b><br><br>
+        <img id="de">
+      </div>
+    </div>
+
   </div>
 
+  <div id="dis">
+    <input type="text" id="chatInput">
+    <button onclick="caseController()">→</button>
+  </div>
+
+   <div style="position:fixed; bottom:5%; right:30%;">
+    <input id="chatInput" style="width:600px; background-color:#BDC7D1; padding:10px; border-radius:20px;">
+    <button style="width:40px;" onclick="caseController()">→</button>
+  </div>
+
+
+  <div class="footer">
+    Anveshan Intelligence can make mistakes, please use it carefully.
+  </div>
+
+  <button class="menu-btn" onclick="openMenu()">
+  ☰
+</button>
+
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
+<div id="sideMenu" class="side-menu">
+  <div class="menu-header">
+    <h2>ANVESHAN</h2>
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
+
+  <a href="#">New chat</a>
+  <a href="#">Save chat</a>
+  <a href="#">Delete chat</a>
+  <a href="#">View history</a>
+  <a href="#">Change password</a>
+  <a href="#">Change profilepic</a>
+  <a href="#">Notifications</a>
+  <a href="#">Help</a>
+  <a href="#">About us</a>
+  <a href="#">Logout</a>
+  
+  
+</div
+
+</body>
+</html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<script src="fir(1).js"></script>
+<script src="fir.js"></script>
 
 
 <script>
+
+function openMenu(){
+  document.getElementById("sideMenu").style.left = "0";
+  document.getElementById("overlay").style.display = "block";
+  document.querySelector(".menu-btn").style.display = "none";
+ }
+
+function closeMenu(){
+  document.getElementById("sideMenu").style.left = "-320px";
+  document.getElementById("overlay").style.display = "none";
+  document.querySelector(".menu-btn").style.display = "block";
+ }
 
 let el1=document.getElementById("ds");
 let el2=document.getElementById("de");
@@ -593,6 +640,11 @@ function caseController(){
 }
 </script>
 
-</body>
-</html>
+
+
+
+
+
+
+
 
