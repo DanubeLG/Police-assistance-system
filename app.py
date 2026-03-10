@@ -1,6 +1,13 @@
 #code to connect back to mysql just in case postgre is not viable
 '''
 import mysql.connector
+mysql.connector.connect(
+        host="localhost",
+        port=3306,
+        user="root",
+        password="0007",
+        database="miniproject"
+    )
 '''
 from flask import Flask, request, jsonify
 from flask import render_template
