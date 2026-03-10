@@ -1,19 +1,18 @@
+#code to connect back to mysql just in case postgre is not viable
+'''
+import mysql.connector
+'''
 from flask import Flask, request, jsonify
 from flask import render_template
 from flask_cors import CORS
-import mysql.connector
-
+import psycopg2
 app = Flask(__name__)
 CORS(app)
 
 def get_db():
-    return mysql.connector.connect(
-        host="localhost",
-        port=3306,
-        user="root",
-        password="0007",
-        database="miniproject"
-    )
+    db_url="postgresql://root:gpJyxnlfoUCX9RorIolq0khn7phiJerT@dpg-d6nqo49aae7s738jok60-a/miniproject_dp02"
+    conn=psycopg2.connect(db_url)
+    return conn
 
 @app.route("/users", methods=["GET"])
 def get_users():
