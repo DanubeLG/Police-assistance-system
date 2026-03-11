@@ -539,48 +539,47 @@ async function updatePipeline() {
     renderOutput();
 }
 
-function execute(){
-  let fir=document.getElementById("firDetails").value.trim();
-  let victimAlive=document.getElementById("victimAlive").value;
+async function execute(){
+    let fir = document.getElementById("firDetails").value.trim();
+    let victimAlive = document.getElementById("victimAlive").value;
 
-  if(!fir || !victimAlive){
-    alert("Complete required fields.");
-    return;
-  }
+    if(!fir || !victimAlive){
+        alert("Complete required fields.");
+        return;
+    }
 
-  let statementToCompare="", firFiler="";
+    let statementToCompare="", firFiler="";
 
-  if(victimAlive==="yes"){
-    statementToCompare=document.getElementById("victimStatement")?.value.trim() || "";
-  }
+    if(victimAlive==="yes"){
+        statementToCompare = document.getElementById("victimStatement")?.value.trim() || "";
+    }
 
-  if(victimAlive==="no"){
-    firFiler=document.getElementById("firFiler")?.value.trim() || "";
-    statementToCompare=document.getElementById("proxyStatement")?.value.trim() || "";
-  }
+    if(victimAlive==="no"){
+        firFiler = document.getElementById("firFiler")?.value.trim() || "";
+        statementToCompare = document.getElementById("proxyStatement")?.value.trim() || "";
+    }
 
-  caseData={
-    FIR: fir,
-    VictimAlive: victimAlive,
-    FIR_Filer: firFiler,
-    StatementUsed: statementToCompare,
-    Date: document.getElementById("date")?.value || "",
-    Time: document.getElementById("startTime")?.value || "",
-    Weapon: document.getElementById("weaponUsed")?.value || "",
-    Location: document.getElementById("location")?.value || "",
-    IncidentType: document.getElementById("incidentType")?.value || ""
-  };
+    caseData = {
+        FIR: fir,
+        VictimAlive: victimAlive,
+        FIR_Filer: firFiler,
+        StatementUsed: statementToCompare,
+        Date: document.getElementById("date")?.value || "",
+        Time: document.getElementById("startTime")?.value || "",
+        Weapon: document.getElementById("weaponUsed")?.value || "",
+        Location: document.getElementById("location")?.value || "",
+        IncidentType: document.getElementById("incidentType")?.value || ""
+    };
 
-  updatePipeline();
+    await updatePipeline(); 
 }
 
-sync function caseController() {
+async function caseController() {
     let chatAnswer = document.getElementById("chatInput").value.trim();
     let normalized = chatAnswer.toLowerCase();
 
     if (!policeMode.active) {
-
-        execute();
+        await execute(); 
         policeMode.active = true;
         addHistory("SYSTEM: Case file created. Investigation started.");
         addHistory("POLICE: " + policeQuestionEngine());
@@ -593,18 +592,14 @@ sync function caseController() {
         updateFromPoliceAnswer(chatAnswer);
         document.getElementById("chatInput").value = "";
 
-  
         if (caseData.stage === "final" && ["yes", "report", "generate"].includes(normalized)) {
-            
             if (typeof create3 === "function") create3(); 
             await updatePipeline();
             addHistory("POLICE: Investigation complete. Final ranking generated.");
             return;
         }
 
-        await updatePipeline();
-
-       
+        await updatePipeline(); 
         addHistory("POLICE: " + policeQuestionEngine());
     }
 }
