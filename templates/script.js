@@ -532,47 +532,57 @@ async function updatePipeline() {
         ? JSON.parse(JSON.stringify(caseData.RLE.suspects))
         : [];
 
-    
+  
     caseData = await TCI(caseData);
     caseData = TCA(caseData);
     caseData = RLE(caseData);
 
-    
     if (oldSuspects.length > 0) {
         caseData.RLE.suspects = mergeSuspects(oldSuspects, caseData.RLE.suspects);
     }
 
+    if (nbModel.total) { 
+  
+        let prediction = predictCrime(
+            caseData.Location || "unknown",
+            Number(document.getElementById("age")?.value || 30),
+            document.getElementById("gender")?.value || "unknown",
+            caseData.Weapon || "unknown"
+        );
+
+        caseData.predictedCrime = prediction.crime;
+        caseData.predictedCrimeScore = prediction.score;
+    }
     caseData = FCI(caseData);
     caseData = EAS(caseData);
 
-    
     localStorage.setItem("Current_Case", JSON.stringify(caseData));
 
-    
     SIM();
     renderOutput();
 }
 
-async function execute(){
+async function execute() {
     let fir = document.getElementById("firDetails").value.trim();
     let victimAlive = document.getElementById("victimAlive").value;
 
-    if(!fir || !victimAlive){
+    if (!fir || !victimAlive) {
         alert("Complete required fields.");
         return;
     }
 
-    let statementToCompare="", firFiler="";
+    let statementToCompare = "", firFiler = "";
 
-    if(victimAlive==="yes"){
+    if (victimAlive === "yes") {
         statementToCompare = document.getElementById("victimStatement")?.value.trim() || "";
     }
 
-    if(victimAlive==="no"){
+    if (victimAlive === "no") {
         firFiler = document.getElementById("firFiler")?.value.trim() || "";
         statementToCompare = document.getElementById("proxyStatement")?.value.trim() || "";
     }
 
+    
     caseData = {
         FIR: fir,
         VictimAlive: victimAlive,
@@ -585,7 +595,7 @@ async function execute(){
         IncidentType: document.getElementById("incidentType")?.value || ""
     };
 
-    await updatePipeline(); 
+    await updatePipeline();
 }
 
 async function caseController() {
@@ -617,6 +627,7 @@ async function caseController() {
         addHistory("POLICE: " + policeQuestionEngine());
     }
 }
+
 
 
 
