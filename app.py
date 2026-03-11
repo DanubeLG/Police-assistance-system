@@ -1,5 +1,5 @@
 import psycopg2
-#from psycopg2.extras import RealDictCursor
+from psycopg2.extras import RealDictCursor
 
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
@@ -17,7 +17,7 @@ def get_db():
 def get_users():
 
     db = get_db()
-    cursor = db.cursor()
+    cursor = db.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("SELECT uid, post, password FROM users ORDER BY post")
 
