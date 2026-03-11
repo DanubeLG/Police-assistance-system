@@ -3,6 +3,7 @@ import psycopg2
 from flask import Flask, request, jsonify
 from flask import render_template
 from flask_cors import CORS
+from flask_cors import cross_origin
 
 app = Flask(__name__)
 CORS(app)
