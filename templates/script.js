@@ -513,24 +513,30 @@ function mergeSuspects(oldSuspects, newSuspects){
   return newSuspects;
 }
 
-function updatePipeline(){
-  let oldSuspects = caseData.RLE?.suspects ? JSON.parse(JSON.stringify(caseData.RLE.suspects)) : [];
+async function updatePipeline() {
+    let oldSuspects = caseData.RLE?.suspects
+        ? JSON.parse(JSON.stringify(caseData.RLE.suspects))
+        : [];
 
-  caseData = TCI(caseData);
-  caseData = TCA(caseData);
-  caseData = RLE(caseData);
+    
+    caseData = await TCI(caseData);
+    caseData = TCA(caseData);
+    caseData = RLE(caseData);
 
-  if(oldSuspects.length > 0){
-    caseData.RLE.suspects = mergeSuspects(oldSuspects, caseData.RLE.suspects);
-  }
+    
+    if (oldSuspects.length > 0) {
+        caseData.RLE.suspects = mergeSuspects(oldSuspects, caseData.RLE.suspects);
+    }
 
-  caseData = FCI(caseData);
-  caseData = EAS(caseData);
+    caseData = FCI(caseData);
+    caseData = EAS(caseData);
 
-  localStorage.setItem("Current_Case", JSON.stringify(caseData));
+    
+    localStorage.setItem("Current_Case", JSON.stringify(caseData));
 
-  SIM();
-  renderOutput();
+    
+    SIM();
+    renderOutput();
 }
 
 function execute(){
@@ -568,29 +574,38 @@ function execute(){
   updatePipeline();
 }
 
-function caseController(){
-  let chatAnswer = document.getElementById("chatInput").value.trim();
+sync function caseController() {
+    let chatAnswer = document.getElementById("chatInput").value.trim();
+    let normalized = chatAnswer.toLowerCase();
 
-  if(!policeMode.active){
-    execute();
-    policeMode.active = true;
-    addHistory("SYSTEM: Case file created. Investigation started.");
-    addHistory("POLICE: " + policeQuestionEngine());
-    document.getElementById("chatInput").value="";
-    return;
-  }
+    if (!policeMode.active) {
+        // First time execution: create case
+        execute();
+        policeMode.active = true;
+        addHistory("SYSTEM: Case file created. Investigation started.");
+        addHistory("POLICE: " + policeQuestionEngine());
+        document.getElementById("chatInput").value = "";
+        return;
+    }
 
-  if(chatAnswer){
-    addHistory("USER: " + chatAnswer);
-    updateFromPoliceAnswer(chatAnswer);
-    document.getElementById("chatInput").value="";
-    if(caseData.stage==="final" && ["yes","report","generate"].includes(normalized)){
-    create3()
-    updatePipeline();
-    addHistory("POLICE: " + policeQuestionEngine());
-    return;
-  }
+    if (chatAnswer) {
+        addHistory("USER: " + chatAnswer);
+        updateFromPoliceAnswer(chatAnswer);
+        document.getElementById("chatInput").value = "";
 
+  
+        if (caseData.stage === "final" && ["yes", "report", "generate"].includes(normalized)) {
+            
+            if (typeof create3 === "function") create3(); 
+            await updatePipeline();
+            addHistory("POLICE: Investigation complete. Final ranking generated.");
+            return;
+        }
 
+        await updatePipeline();
+
+       
+        addHistory("POLICE: " + policeQuestionEngine());
+    }
 }
 
