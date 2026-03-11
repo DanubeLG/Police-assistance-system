@@ -251,44 +251,58 @@ function RLE(caseData){
 }
 
 function FCI(caseData){
-  let suspects=caseData.RLE?.suspects || [];
-  let baseScore=10;
+    let suspects = caseData.RLE?.suspects || [];
+    let baseScore = 10;
 
-  suspects.forEach((s,index)=>{
-    let score=baseScore + s.traits.length*5 + (s.location?5:0) + index*2 + (s.name!=="Unknown Individual"?5:0);
-    s.evidenceScore=score;
-  });
+    suspects.forEach((s, index) => {
+        let score = baseScore + s.traits.length*5 + (s.location?5:0) + index*2 + (s.name!=="Unknown Individual"?5:0);
 
-  caseData.FCI={
-    suspects,
-    totalScore:suspects.reduce((acc,s)=>acc+s.evidenceScore,0)
-  };
-  return caseData;
+        if(caseData.predictedCrime){
+            let match = s.traits.some(trait => caseData.predictedCrime.toLowerCase().includes(trait.toLowerCase()));
+            if(match){
+                
+                score *= 1 + (caseData.predictedCrimeScore || 0)/10; 
+            }
+        }
+
+        s.evidenceScore = Math.round(score);
+    });
+
+    caseData.FCI = {
+        suspects,
+        totalScore: suspects.reduce((acc,s)=>acc+s.evidenceScore,0)
+    };
+
+    return caseData;
 }
 
 function EAS(caseData){
-  if(!caseData.RLE?.suspects) return caseData;
+    if(!caseData.RLE?.suspects) return caseData;
 
-  let totalEvidence=0;
-  let highPrioritySuspects=[];
+    let totalEvidence = 0;
+    let highPrioritySuspects = [];
 
-  caseData.RLE.suspects.forEach(s=>{
-    let weight=1;
+    caseData.RLE.suspects.forEach(s => {
+        let weight = 1;
 
-    if(s.traits.length) weight+=0.2*s.traits.length;
-    if(s.location) weight+=0.3;
-    if(s.interviewStatement) weight+=0.5;
-    if(s.alibiWeak) weight+=0.4;
-    if(s.contradictions?.length) weight+=0.5;
+        if(s.traits.length) weight += 0.2*s.traits.length;
+        if(s.location) weight += 0.3;
+        if(s.interviewStatement) weight += 0.5;
+        if(s.alibiWeak) weight += 0.4;
+        if(s.contradictions?.length) weight += 0.5;
 
-    s.finalScore=Math.round((s.evidenceScore || 10)*weight);
-    totalEvidence+=s.finalScore;
+        if(caseData.predictedCrimeScore){
+            weight += (caseData.predictedCrimeScore / 20); 
+        }
 
-    if(s.finalScore>=40) highPrioritySuspects.push(s.name);
-  });
+        s.finalScore = Math.round((s.evidenceScore || 10) * weight);
+        totalEvidence += s.finalScore;
 
-  caseData.EAS={totalEvidenceScore:totalEvidence,highPrioritySuspects};
-  return caseData;
+        if(s.finalScore >= 40) highPrioritySuspects.push(s.name);
+    });
+
+    caseData.EAS = { totalEvidenceScore: totalEvidence, highPrioritySuspects };
+    return caseData;
 }
 
 function generateEvidenceSummary(caseData) {
@@ -603,5 +617,6 @@ async function caseController() {
         addHistory("POLICE: " + policeQuestionEngine());
     }
 }
+
 
 
