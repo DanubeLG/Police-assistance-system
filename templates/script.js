@@ -579,7 +579,7 @@ sync function caseController() {
     let normalized = chatAnswer.toLowerCase();
 
     if (!policeMode.active) {
-        // First time execution: create case
+
         execute();
         policeMode.active = true;
         addHistory("SYSTEM: Case file created. Investigation started.");
@@ -608,4 +608,5 @@ sync function caseController() {
         addHistory("POLICE: " + policeQuestionEngine());
     }
 }
+
 
