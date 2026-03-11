@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 def get_db():
-    db_url =r"postgresql://root:gpJyxnlfoUCX9RorIolq0khn7phiJerT@dpg-d6nqo49aae7s738jok60-a.oregon-postgres.render.com:5432/miniproject_dp02"
+    db_url =r"postgresql://root:gpJyxnlfoUCX9RorIolq0khn7phiJerT@dpg-d6nqo49aae7s738jok60-a/miniproject_dp02"
     conn = psycopg2.connect(db_url)
     return conn
 
