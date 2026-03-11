@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from flask import Flask, request, jsonify, render_template
+from flask import render_template
 from flask_cors import CORS
 
 app = Flask(__name__)
