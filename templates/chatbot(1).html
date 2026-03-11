@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles (1).css') }}">
+  <title>ANVESHAN INTELLIGENCE</title>
+</head>
+
+<body>
+
+  <div class="layout">
+
+    <div class="side">
+      <ol id="y"></ol>
+    </div>
+
+    <div class="center">
+      <div class="form-box">
+
+        <h2 style="text-align:center;">Hi, please fill out these details</h2>
+
+        <ol id="details">
+          <li>Complainant Name: <input id="complainantName"></li>
+          <li>Father/Husband Name: <input id="HusbandName"></li>
+          <li>DOB: <input type="date" id="dob"></li>
+          <li>Nationality: <input id="nation"></li>
+          <li>Occupation: <input></li>
+          <li>Age: <input type="number" min="13" id="age"></li>
+
+          <li>Gender:
+            <select>
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </li>
+
+          <li>Address: <input id="address"></li>
+          <li>Phone: <input type="tel" pattern="\+91[0-9]{10}" placeholder="+911234567890" required></li>
+
+          <li>Holiday:
+            <select id="holiday">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>No idea</option>
+            </select>
+          </li>
+
+          <li>Holiday Name: <input></li>
+
+          <li>Festival:
+            <select id="festival">
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>No idea</option>
+            </select>
+          </li>
+
+          <li>Festival Name: <input></li>
+
+          <li>Weapon Used: <input id="weaponUsed"></li>
+          <li>Date: <input type="date" id="date"></li>
+          <li>Start Time: <input type="time" id="startTime"></li>
+          <li>End Time: <input type="time" id="endTime"></li>
+
+          <li>Time (Morning/Afternoon...): <input></li>
+          <li>Place of Incident: <input></li>
+
+          <li>Location of Incident: <input id="location"></li>
+          <li>Type of Incident: <input id="incidentType"></li>
+        </ol>
+
+        <h3>FIR Details</h3>
+        <textarea id="firDetails"></textarea>
+
+        <h3>Is the victim alive?</h3>
+        <select id="victimAlive">
+          <option value="">Select</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+          <option value="probably">Probably</option>
+        </select>
+
+        <div id="dynamicSection"></div>
+        <div id="suspectInterviewSection"></div>
+
+        <button id="x" onclick="create()">Generate FIR</button>
+        <button id="v" onclick="caseController()">Run Investigation</button>
+
+        <div id="output"></div>
+
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="profile-box">
+        <img id="ds" style="border-radius:50px;"><br><br>
+
+        <b>Name:</b>
+        <p id="k"></p>
+
+        <b>📞:</b>
+        <p id="l"></p>
+
+        <b>✉:</b>
+        <p id="m"></p>
+
+        <b>Signature:</b><br><br>
+        <img id="de">
+      </div>
+    </div>
+
+  </div>
+
+  <div id="dis">
+    <input type="text" id="chatInput">
+    <button onclick="caseController()">→</button>
+  </div>
+
+
+  <div class="footer">
+    Anveshan Intelligence can make mistakes, please use it carefully.
+  </div>
+
+  <button class="menu-btn" onclick="openMenu()">
+  ☰
+</button>
+
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
+<div id="sideMenu" class="side-menu">
+  <div class="menu-header">
+    <h2>ANVESHAN</h2>
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
+
+  <a href="#">New chat</a>
+  <a href="#">Save chat</a>
+  <a href="#">Delete chat</a>
+  <a href="#">View history</a>
+  <a href="#">Change password</a>
+  <a href="#">Change profilepic</a>
+  <a href="#">Notifications</a>
+  <a href="#">Help</a>
+  <a href="#">About us</a>
+  <a href="#">Logout</a>
+  
+  
+</div
+
+</body>
+</html>
+<script src="script.js"></script>
