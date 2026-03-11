@@ -115,40 +115,35 @@ return exponent/Math.sqrt(2*Math.PI*varr)
 
 }
 
-function predictCrime(city,age,gender,weapon){
+function predictCrime(city, age, gender, weapon){
+    city = preprocess(city)
+    gender = preprocess(gender)
+    weapon = preprocess(weapon)
 
-city=preprocess(city)
-gender=preprocess(gender)
-weapon=preprocess(weapon)
+    let cityE = encoders.city[city] ?? -1
+    let genderE = encoders.gender[gender] ?? -1
+    let weaponE = encoders.weapon[weapon] ?? -1
 
-let cityE=encoders.city[city]??-1
-let genderE=encoders.gender[gender]??-1
-let weaponE=encoders.weapon[weapon]??-1
+    let bestCrime = null
+    let bestScore = -Infinity
 
-let bestCrime=null
-let bestScore=-Infinity
+    for(let crime in nbModel.crimeCounts){
+        let prior = Math.log(nbModel.crimeCounts[crime] / nbModel.total)
+        let cityProb = Math.log((nbModel.cityCounts[crime][cityE] || 1) / nbModel.crimeCounts[crime])
+        let genderProb = Math.log((nbModel.genderCounts[crime][genderE] || 1) / nbModel.crimeCounts[crime])
+        let weaponProb = Math.log((nbModel.weaponCounts[crime][weaponE] || 1) / nbModel.crimeCounts[crime])
+        let ageProb = Math.log(gaussian(age, nbModel.ageMean[crime], nbModel.ageVar[crime]))
 
-for(let crime in nbModel.crimeCounts){
+        let score = prior + cityProb + genderProb + weaponProb + ageProb
 
-let prior=Math.log(nbModel.crimeCounts[crime]/nbModel.total)
+        if(score > bestScore){
+            bestScore = score
+            bestCrime = crime
+        }
+    }
 
-let cityProb=Math.log((nbModel.cityCounts[crime][cityE]||1)/nbModel.crimeCounts[crime])
-
-let genderProb=Math.log((nbModel.genderCounts[crime][genderE]||1)/nbModel.crimeCounts[crime])
-
-let weaponProb=Math.log((nbModel.weaponCounts[crime][weaponE]||1)/nbModel.crimeCounts[crime])
-
-let ageProb=Math.log(gaussian(age,nbModel.ageMean[crime],nbModel.ageVar[crime]))
-
-let score=prior+cityProb+genderProb+weaponProb+ageProb
-
-if(score>bestScore){
-bestScore=score
-bestCrime=crime
-}
-
-}
-
-return decoders.crime[bestCrime]
-
+    return {
+        crime: decoders.crime[bestCrime],
+        score: bestScore // log-probability
+    }
 }
