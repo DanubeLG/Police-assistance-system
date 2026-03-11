@@ -32,30 +32,22 @@ def get_users():
 
 @app.route("/login", methods=["POST"])
 def login():
-
-    data = request.get_json()
-
-    uid = data.get("uid")
-    password = data.get("password")
-
-    db = get_db()
-    cursor = db.cursor(cursor_factory=RealDictCursor)
-
-    cursor.execute(
-        "SELECT * FROM users WHERE uid=%s AND password=%s",
-        (uid, password)
-    )
-
-    user = cursor.fetchone()
-
-    cursor.close()
-    db.close()
-
-    if user:
-        return jsonify({"status": "success"})
-    else:
-        return jsonify({"status": "fail"})
-
+    try:
+        data = request.get_json()
+        uid = data.get("uid")
+        password = data.get("password")
+        db = get_db()
+        cursor = db.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT * FROM users WHERE uid=%s AND password=%s",(uid, password))
+        user = cursor.fetchone()
+        cursor.close()
+        db.close()
+        if user:
+            return jsonify({"status": "success"})
+        else:
+            return jsonify({"status": "fail"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 @app.route("/")
 def home():
