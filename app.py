@@ -66,9 +66,9 @@ def check():
     return render_template("profile1.html")
 
 
-@app.route("/chatbot")
+@app.route("/chatbot(1)")
 def check1():
-    return render_template("chatbot.html")
+    return render_template("chatbot(1).html")
 
 
 if __name__ == "__main__":
