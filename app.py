@@ -5,8 +5,28 @@ from flask import render_template
 from flask_cors import CORS
 from flask_cors import cross_origin
 
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+# ----------------------
+# Load Local Model
+# ----------------------
+model_name = "TheBloke/gpt4all-lora-7b"  # or your local path
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+# Use GPU if available
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+
 app = Flask(__name__)
 CORS(app)
+
+def ask_llm(prompt, max_tokens=200):
+    inputs = tokenizer(prompt, return_tensors="pt").to(device)
+    outputs = model.generate(**inputs, max_new_tokens=max_tokens)
+    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+
 
 def get_db():
     db_url="postgresql://root:gpJyxnlfoUCX9RorIolq0khn7phiJerT@dpg-d6nqo49aae7s738jok60-a.oregon-postgres.render.com/miniproject_dp02"
@@ -59,8 +79,23 @@ def check():
 def check1():
     return render_template("chatbot1.html")
 
+@app.route("/next-question", methods=["POST"])
+def next_question():
+    case_data = request.json
+    prompt = f"""
+You are an AI police assistant analyzing a case.
+
+Current case data:
+{case_data}
+
+Suggest the next step, question to ask, or evidence to check.
+Keep it concise.
+"""
+    response = ask_llm(prompt)
+    return jsonify({"question": response})
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5000)
 
 
