@@ -4,10 +4,9 @@ from flask import Flask, request, jsonify
 from flask import render_template
 from flask_cors import CORS
 from flask_cors import cross_origin
-
+'''
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
-
 # ----------------------
 # Load Local Model
 # ----------------------
@@ -18,7 +17,7 @@ model = AutoModelForCausalLM.from_pretrained(model_name)
 # Use GPU if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-
+'''
 app = Flask(__name__)
 CORS(app)
 
@@ -78,7 +77,7 @@ def check():
 @app.route("/chatbot1")
 def check1():
     return render_template("chatbot1.html")
-
+'''
 @app.route("/next-question", methods=["POST"])
 def next_question():
     case_data = request.json
@@ -93,8 +92,7 @@ Keep it concise.
 """
     response = ask_llm(prompt)
     return jsonify({"question": response})
-
-
+'''
 if __name__ == "__main__":
     app.run(port=5000)
 
