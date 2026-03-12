@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask import render_template
 from flask_cors import CORS
 from flask_cors import cross_origin
+#note: before implementing llm add transformers and torch to requirements.txt
 '''
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
