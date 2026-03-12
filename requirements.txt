@@ -3,5 +3,3 @@ flask-cors
 mysql-connector-python
 psycopg2-binary
 gunicorn
-transformers
-torch
