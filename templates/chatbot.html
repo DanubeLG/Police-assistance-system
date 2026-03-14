@@ -1171,6 +1171,41 @@ async function updatePipeline() {
     renderOutput();
 }
 
+async function updatePipeline() {
+    let oldSuspects = caseData.RLE?.suspects
+        ? JSON.parse(JSON.stringify(caseData.RLE.suspects))
+        : [];
+
+  
+    caseData = await TCI(caseData);
+    caseData = TCA(caseData);
+    caseData = RLE(caseData);
+
+    if (oldSuspects.length > 0) {
+        caseData.RLE.suspects = mergeSuspects(oldSuspects, caseData.RLE.suspects);
+    }
+
+    if (nbModel.total) { 
+  
+        let prediction = predictCrime(
+            caseData.Location || "unknown",
+            Number(document.getElementById("age")?.value || 30),
+            document.getElementById("gender")?.value || "unknown",
+            caseData.Weapon || "unknown"
+        );
+
+        caseData.predictedCrime = prediction.crime;
+        caseData.predictedCrimeScore = prediction.score;
+    }
+    caseData = FCI(caseData);
+    caseData = EAS(caseData);
+
+    localStorage.setItem("Current_Case", JSON.stringify(caseData));
+
+    SIM();
+    renderOutput();
+}
+
 
 /* execute investigation */
 
