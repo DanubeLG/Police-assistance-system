@@ -380,51 +380,6 @@ trainNB(data)
 
 window.onload=loadCrimeDataset
 
-/* ============================
-INVESTIGATION SYSTEM
-============================ */
-
-function addHistory(text){
-
-let li=document.createElement("li")
-li.innerText=text
-document.getElementById("history").appendChild(li)
-
-}
-
-function runInvestigation(){
-
-let city=document.getElementById("location").value
-let age=Number(document.getElementById("age").value)
-let gender=document.getElementById("gender").value
-let weapon=document.getElementById("weaponUsed").value
-let fir=document.getElementById("firDetails").value
-
-if(!nbModel.total){
-
-alert("Model still training, wait a moment")
-return
-
-}
-
-let prediction=predictCrime(city,age,gender,weapon)
-
-addHistory("Investigation started")
-addHistory("AI predicted crime: "+prediction.crime)
-
-document.getElementById("output").innerHTML=`
-
-<h3>AI Crime Prediction</h3>
-
-<p><b>Predicted Crime:</b> ${prediction.crime}</p>
-
-<p><b>Confidence Score:</b> ${prediction.score.toFixed(3)}</p>
-
-<p><b>FIR:</b> ${fir}</p>
-
-`
-
-}
 
 function addHistory(text){
   let ol = document.getElementById("y");
