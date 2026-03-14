@@ -61,6 +61,6 @@ def home():
 def check():
     return render_template("profile1.html")
 
-@app.route("/chatbot1")
+@app.route("/chatbot")
 def check1():
-    return render_template("chatbot1.html")
+    return render_template("chatbot.html")
