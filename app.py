@@ -51,7 +51,7 @@ def login():
     password = data.get("password")
 
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor()
 
     cursor.execute(
         "SELECT * FROM users WHERE uid=%s AND password=%s",
