@@ -1,24 +1,10 @@
 import psycopg2
-
+from psycopg2.extras import RealDictCursor
 from flask import Flask, request, jsonify
 from flask import render_template
 from flask_cors import CORS
 from flask_cors import cross_origin
 #note: before implementing llm add transformers and torch to requirements.txt
-'''
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-# ----------------------
-# Load Local Model
-# ----------------------
-model_name = "TheBloke/gpt4all-lora-7b"  # or your local path
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
-
-# Use GPU if available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
-'''
 app = Flask(__name__)
 CORS(app)
 
@@ -36,7 +22,7 @@ def get_db():
 @app.route("/users", methods=["GET"])
 def get_users():
     db = get_db()
-    cursor = db.cursor(dictionary=True)
+    cursor = db.cursor(cursor_factory=RealDictCursor)
     cursor.execute("SELECT uid, post, password FROM users ORDER BY post")
     data = cursor.fetchall()
     cursor.close()
@@ -51,7 +37,7 @@ def login():
     password = data.get("password")
 
     db = get_db()
-    cursor = db.cursor()
+    cursor = db.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute(
         "SELECT * FROM users WHERE uid=%s AND password=%s",
@@ -78,23 +64,3 @@ def check():
 @app.route("/chatbot1")
 def check1():
     return render_template("chatbot1.html")
-'''
-@app.route("/next-question", methods=["POST"])
-def next_question():
-    case_data = request.json
-    prompt = f"""
-You are an AI police assistant analyzing a case.
-
-Current case data:
-{case_data}
-
-Suggest the next step, question to ask, or evidence to check.
-Keep it concise.
-"""
-    response = ask_llm(prompt)
-    return jsonify({"question": response})
-'''
-if __name__ == "__main__":
-    app.run(port=5000)
-
-
