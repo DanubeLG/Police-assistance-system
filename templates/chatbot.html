@@ -1079,6 +1079,24 @@ function updateFromPoliceAnswer(answer){
   }
 }
 
+function renderOutput(){
+
+let out=document.getElementById("output")
+
+out.innerHTML=`
+
+<h3>Investigation Result</h3>
+
+<p><b>Predicted Crime:</b> ${caseData.predictedCrime || "Unknown"}</p>
+
+<p><b>Prediction Score:</b> ${caseData.predictedCrimeScore || "N/A"}</p>
+
+`
+
+}
+
+
+  
   function SIM(){
   if(!caseData.RLE?.suspects) return;
 
@@ -1258,23 +1276,6 @@ renderOutput()
 }
 
 /* display result */
-
-function renderOutput(){
-
-let out=document.getElementById("output")
-
-out.innerHTML=`
-
-<h3>Investigation Result</h3>
-
-<p><b>Predicted Crime:</b> ${caseData.predictedCrime || "Unknown"}</p>
-
-<p><b>Prediction Score:</b> ${caseData.predictedCrimeScore || "N/A"}</p>
-
-`
-
-}
-
 /* main controller */
 
 async function caseController(){
