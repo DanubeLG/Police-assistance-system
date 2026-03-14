@@ -29,7 +29,7 @@
           <li>Age: <input type="number" min="13" id="age"></li>
 
           <li>Gender:
-            <select>
+            <select id="gender">
               <option value="">Select</option>
               <option>Male</option>
               <option>Female</option>
@@ -58,8 +58,8 @@
           <li>Start Time: <input type="time" id="startTime"></li>
           <li>End Time: <input type="time" id="endTime"></li>
 
-          <li>Time (Morning/Afternoon...): <input></li>
-          <li>Place of Incident: <input></li>
+          <li>Time (Morning/Afternoon...): <input id="timeCategory"></li>
+          <li>Place of Incident: <input id="place"></li>
 
           <li>Location of Incident: <input id="location"></li>
           <li>Type of Incident:
@@ -154,7 +154,7 @@
   <a href="#">Logout</a>
   
   
-</div
+</div>
 
 </body>
 </html>
@@ -190,6 +190,9 @@ el2.src=img2;
 el3.innerText=n1;
 el4.innerText=n2;
 el5.innerText=n3;
+
+let issues = [];
+let nbModel={ total:0 }
   
 let caseData = {};
 let policeMode = { active: false };
@@ -597,7 +600,7 @@ function create() {
 
     } else {
 
-      contradictions.push("Weapon mismatch between FIR and statement.");
+      issues.push("Weapon mismatch between FIR and statement.");
       return false;
     }
 
@@ -609,6 +612,10 @@ function create() {
 }
 
   function create3(){
+
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+    
 doc.setFont("helvetica", "normal");
 
 doc.setFontSize(16);
@@ -660,9 +667,6 @@ y += 12;
 doc.setFontSize(12);
 doc.text("4. FIR Summary", 14, y);
 doc.setFontSize(11);
-
-y += 8;
-doc.text(name11, 20, y);
 
 y += 12;
 doc.setFontSize(12);
@@ -795,7 +799,6 @@ alert("Investigation report created successfully");}
 async function TCI(caseData) {
 
   let fir = (caseData.FIR || "").toLowerCase();
-  let issues = [];
 
   let place = document.getElementById("place")?.value || "";
   let location = document.getElementById("location")?.value || "";
