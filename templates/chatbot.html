@@ -332,6 +332,754 @@ ol.appendChild(li)
 
 }
 
+  function getCurrentDateTime() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes} hrs`;
+}
+
+function getDayName(dateString) {
+    if (!dateString) return "";
+    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    return days[new Date(dateString).getDay()];
+}
+
+function create() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let name1=document.getElementById("complainantName").value;
+    
+    let name2=document.getElementById("date").value;
+    
+    let name3=document.getElementById("startTime").value;
+    
+    let name4=document.getElementById("endTime").value;
+    
+    let name5=document.getElementById("address").value;
+    
+    let name6=document.getElementById("HusbandName").value;
+    
+    let name7=document.getElementById("dob").value;
+    
+    let name8=document.getElementById("nation").value;
+    
+    let name9=document.getElementById("age").value;
+
+    let name10=document.getElementById("HusbandName").value;
+    
+  
+    doc.setFont("helvetica", "normal");
+
+    doc.setFontSize(16);
+    doc.text("FIRST INFORMATION REPORT", 105, 15, { align: "center" });
+
+    doc.setFontSize(11);
+    doc.text("(Under Section 154 Cr.P.C.)", 105, 22, { align: "center" });
+
+    let y = 35;
+
+    doc.text("1. District: SUNDARGARH", 14, y);
+    doc.text("P.S.: RAIBOGA", 90, y);
+    doc.text("Year: " + new Date().getFullYear(), 160, y);
+
+    y += 8;
+    doc.text("FIR No.: 0001", 14, y);
+    doc.text("Date & Time of FIR: " + getCurrentDateTime(), 90, y);
+
+    y += 12;
+    doc.setFontSize(12);
+    doc.text("2. Acts and Sections", 14, y);
+    doc.setFontSize(11);
+
+    y += 8;
+    doc.text("Act: IPC 1860", 20, y);
+    doc.text("Section: 279, 304-A", 120, y);
+
+    y += 12;
+    doc.setFontSize(12);
+    doc.text("3. Occurrence of Offence", 14, y);
+    doc.setFontSize(11);
+
+    y += 8;
+    doc.text("Day: " + getDayName(name2), 20, y);
+    doc.text("Date: " + name2 , 80, y);
+
+    y += 7;
+    doc.text("Time From: " + name3, 20, y);
+    doc.text("Time To: " + name4, 120, y);
+
+    y += 7;
+    doc.text("Information received at P.S.: " + getCurrentDateTime(), 20, y);
+
+    y += 12;
+    doc.setFontSize(12);
+    doc.text("4. Type of Information: Written", 14, y);
+
+    y += 12;
+    doc.setFontSize(12);
+    doc.text("5. Place of Occurrence", 14, y);
+    doc.setFontSize(11);
+
+    y += 8;
+    doc.text("Address: " + name5, 20, y);
+
+    y += 12;
+    doc.setFontSize(12);
+    doc.text("6. Complainant / Informant", 14, y);
+    doc.setFontSize(11);
+
+    y += 8;
+    doc.text("Name: " + name1 , 20, y);
+    y += 7;
+    doc.text("Father/Husband Name: " + name10, 20, y);
+    y += 7;
+    doc.text("DOB: " + name7 , 20, y);
+    doc.text("Nationality: " + name8, 120, y);
+
+    y += 20;
+    doc.text("Signature of Complainant:", 20, y);
+
+    let signatureImg = localStorage.getItem("signaturePic");
+    if (signatureImg) {
+        doc.addImage(signatureImg, "PNG", 20, y + 5, 50, 25);
+    } else {
+        doc.text("Not Available", 60, y);
+    }
+
+    const FIR=doc.output("datauristring");
+    localStorage.removeItem("fir");
+    localStorage.setItem("fir",FIR);
+    let dataUri = localStorage.getItem("fir");
+
+    let byteString = atob(dataUri.split(',')[1]);
+    let mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+
+    let ab = new ArrayBuffer(byteString.length);
+    let ia = new Uint8Array(ab);
+
+   for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+   }
+
+   let blob = new Blob([ab], { type: mimeString });
+
+   let a = document.createElement("a");
+   a.href = URL.createObjectURL(blob);
+   a.download = "FIR_Report_2026.pdf";  
+   a.click();
+   alert("pdf successfully created");
+  }
+
+
+  async function validatePlaceInLocation(place, location) {
+
+  if (!place || !location) {
+    alert("Please enter both place and location");
+    return false;
+  }
+
+  const url =
+   `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(place)}`;
+
+  try {
+
+    const res = await fetch(url, {
+      headers: { "User-Agent": "FIR-System" }
+    });
+
+    const data = await res.json();
+
+    if (data.length === 0) {
+      alert("Place not found");
+      return false;
+    }
+
+    const address = data[0].address;
+
+    const hierarchy = [
+      address.city,
+      address.town,
+      address.village,
+      address.county,
+      address.state,
+      address.country
+    ].filter(Boolean).map(x => x.toLowerCase());
+
+    if (hierarchy.includes(location.toLowerCase())) {
+
+      return true;
+
+    } else {
+
+      contradictions.push("Weapon mismatch between FIR and statement.");
+      return false;
+    }
+
+  } catch (error) {
+
+    alert("Error validating location");
+    return false;
+  }
+}
+
+  function create3(){
+doc.setFont("helvetica", "normal");
+
+doc.setFontSize(16);
+doc.text("INVESTIGATION REPORT", 105, 15, { align: "center" });
+
+doc.setFontSize(11);
+doc.text("(Generated After FIR Analysis)", 105, 22, { align: "center" });
+
+let y = 35;
+
+doc.text("1. District: SUNDARGARH", 14, y);
+doc.text("P.S.: RAIBOGA", 90, y);
+doc.text("Year: " + new Date().getFullYear(), 160, y);
+
+y += 8;
+doc.text("Related FIR No.: 0001", 14, y);
+doc.text("Report Date: " + getCurrentDateTime(), 90, y);
+
+y += 12;
+doc.setFontSize(12);
+doc.text("2. Case Information", 14, y);
+doc.setFontSize(11);
+
+y += 8;
+doc.text("Complainant Name: " + name1, 20, y);
+y += 7;
+doc.text("Father/Husband Name: " + name10, 20, y);
+y += 7;
+doc.text("DOB: " + name7, 20, y);
+doc.text("Nationality: " + name8, 120, y);
+
+y += 12;
+doc.setFontSize(12);
+doc.text("3. Incident Details", 14, y);
+doc.setFontSize(11);
+
+y += 8;
+doc.text("Day: " + getDayName(name2), 20, y);
+doc.text("Date: " + name2, 80, y);
+
+y += 7;
+doc.text("Time From: " + name3, 20, y);
+doc.text("Time To: " + name4, 120, y);
+
+y += 7;
+doc.text("Place of Occurrence: " + name5, 20, y);
+
+y += 12;
+doc.setFontSize(12);
+doc.text("4. FIR Summary", 14, y);
+doc.setFontSize(11);
+
+y += 8;
+doc.text(name11, 20, y);
+
+y += 12;
+doc.setFontSize(12);
+doc.text("5. Consistency Check (TCI)", 14, y);
+doc.setFontSize(11);
+
+y += 8;
+
+if(caseData.TCI && caseData.TCI.issues.length === 0){
+  doc.text("Status: Consistent", 20, y);
+}else{
+  doc.text("Status: Inconsistent", 20, y);
+  y += 7;
+
+  caseData.TCI?.issues.forEach(issue=>{
+    doc.text("- " + issue, 25, y);
+    y += 6;
+  });
+}
+
+y += 8;
+doc.setFontSize(12);
+doc.text("6. Contradiction Analysis (TCA)", 14, y);
+doc.setFontSize(11);
+
+y += 8;
+
+if(caseData.TCA && caseData.TCA.contradictions.length === 0){
+  doc.text("Status: No contradictions found", 20, y);
+}else{
+  doc.text("Status: Contradictions detected", 20, y);
+  y += 7;
+
+  caseData.TCA?.contradictions.forEach(c=>{
+    doc.text("- " + c, 25, y);
+    y += 6;
+  });
+}
+
+y += 12;
+doc.setFontSize(12);
+doc.text("7. Statement Used For Analysis", 14, y);
+doc.setFontSize(11);
+
+y += 8;
+doc.text(caseData.StatementUsed || "No statement recorded.", 20, y);
+
+y += 12;
+doc.setFontSize(12);
+doc.text("8. Evidence Summary", 14, y);
+doc.setFontSize(11);
+
+y += 8;
+
+/* Collect evidence automatically */
+
+let evidence = [];
+
+if(caseData.TCI?.issues?.length){
+  caseData.TCI.issues.forEach(i=>{
+    evidence.push("Internal Inconsistency: " + i);
+  });
+}
+
+if(caseData.TCA?.contradictions?.length){
+  caseData.TCA.contradictions.forEach(c=>{
+    evidence.push("Cross Statement Contradiction: " + c);
+  });
+}
+
+if(caseData.RLE?.extractedFacts?.length){
+  caseData.RLE.extractedFacts.forEach(f=>{
+    evidence.push("Extracted Evidence: " + f);
+  });
+}
+
+if(caseData.FCI?.inconsistencies?.length){
+  caseData.FCI.inconsistencies.forEach(i=>{
+    evidence.push("Fact Verification Failure: " + i);
+  });
+}
+
+if(caseData.FAS?.finalFindings?.length){
+  caseData.FAS.finalFindings.forEach(f=>{
+    evidence.push("Analytical Finding: " + f);
+  });
+}
+
+if(evidence.length === 0){
+  doc.text("No additional analytical evidence detected.", 20, y);
+}else{
+  evidence.forEach(e=>{
+    doc.text("- " + e, 25, y);
+    y += 6;
+  });
+}
+
+y += 20;
+doc.text("Investigating Officer Signature:", 20, y);
+
+
+/* PDF creation */
+
+const report = doc.output("datauristring");
+
+localStorage.removeItem("investigationReport");
+localStorage.setItem("investigationReport", report);
+
+let dataUri = localStorage.getItem("investigationReport");
+
+let byteString = atob(dataUri.split(',')[1]);
+let mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+
+let ab = new ArrayBuffer(byteString.length);
+let ia = new Uint8Array(ab);
+
+for (let i = 0; i < byteString.length; i++) {
+  ia[i] = byteString.charCodeAt(i);
+}
+
+let blob = new Blob([ab], { type: mimeString });
+
+let a = document.createElement("a");
+a.href = URL.createObjectURL(blob);
+a.download = "Investigation_Report.pdf";
+a.click();
+
+alert("Investigation report created successfully");}
+
+async function TCI(caseData) {
+
+  let fir = (caseData.FIR || "").toLowerCase();
+  let issues = [];
+
+  let place = document.getElementById("place")?.value || "";
+  let location = document.getElementById("location")?.value || "";
+
+  await validatePlaceInLocation(place, location);
+
+  let dob = document.getElementById("dob")?.value;
+  let age = document.getElementById("age")?.value;
+
+  if(dob && age){
+    let birthYear = new Date(dob).getFullYear();
+    let currentYear = new Date().getFullYear();
+    let calculatedAge = currentYear - birthYear;
+
+    if(Math.abs(calculatedAge - age) > 1){
+      issues.push("Age does not match the provided DOB.");
+    }
+  }
+
+  let timeCategory = document.getElementById("timeCategory")?.value;
+  let startTime = document.getElementById("startTime")?.value;
+  let endTime = document.getElementById("endTime")?.value;
+
+  if(timeCategory && startTime){
+
+    let hour = parseInt(startTime.split(":")[0]);
+
+    if(timeCategory === "Morning" && (hour < 5 || hour >= 12))
+      issues.push("Start time does not match Morning.");
+
+    if(timeCategory === "Afternoon" && (hour < 12 || hour >= 17))
+      issues.push("Start time does not match Afternoon.");
+
+    if(timeCategory === "Evening" && (hour < 17 || hour >= 20))
+      issues.push("Start time does not match Evening.");
+
+    if(timeCategory === "Night" && (hour < 20 && hour >= 5))
+      issues.push("Start time does not match Night.");
+  }
+
+  if(startTime && endTime){
+    if(endTime < startTime){
+      issues.push("End time occurs before start time.");
+    }
+  }
+
+  let weapons = ["knife","gun","rope","acid","dumbell","stick","stone"];
+
+  weapons.forEach(w=>{
+    if(caseData.Weapon && fir.includes(w) && caseData.Weapon.toLowerCase() !== w){
+      issues.push("Weapon in FIR text contradicts selected weapon.");
+    }
+  });
+
+  let times = ["morning","afternoon","evening","night","dusk"];
+
+  times.forEach(t=>{
+    if(timeCategory && fir.includes(t) && timeCategory.toLowerCase() !== t){
+      issues.push("Time in FIR text contradicts selected time category.");
+    }
+  });
+
+  caseData.TCI = {
+    status: issues.length === 0 ? "Consistent" : "Inconsistent",
+    issues
+  };
+
+  return caseData;
+}
+
+
+
+function TCA(caseData){
+
+  let fir = (caseData.FIR || "").toLowerCase();
+  let statement = (caseData.StatementUsed || "").toLowerCase();
+
+  let contradictions = [];
+
+  if(statement){
+
+    let weapons = ["knife","gun","rope","acid","dumbell","stick","stone"];
+
+    let firWeapon = weapons.find(w => fir.includes(w));
+    let statementWeapon = weapons.find(w => statement.includes(w));
+
+    if(firWeapon && statementWeapon && firWeapon !== statementWeapon){
+      contradictions.push("Weapon mismatch between FIR and statement.");
+    }
+
+    let times = ["morning","afternoon","evening","night","dusk"];
+
+    let firTime = times.find(t => fir.includes(t));
+    let statementTime = times.find(t => statement.includes(t));
+
+    if(firTime && statementTime && firTime !== statementTime){
+      contradictions.push("Time mismatch between FIR and statement.");
+    }
+  }
+
+  caseData.TCA = {
+    status: contradictions.length === 0 ? "Consistent" : "Contradictions Found",
+    contradictions
+  };
+
+  return caseData;
+}
+function RLE(caseData){
+  let statement = caseData.StatementUsed || "";
+  let suspects=[], locations=[], traits=[];
+
+  if(!statement){
+    caseData.RLE={suspects,locations,traits};
+    return caseData;
+  }
+
+  let sentences = statement.match(/[^\.!\?]+[\.!\?]*/g) || [statement];
+
+  const locationKeywords=["mall","market","park","station","hospital","school","bridge","street","road","metro","cafe","hotel","college","university","restaurant","gym","club","home","office"];
+  const traitKeywords=["tall","short","beard","scar","jacket","mask","black","white","blue","red","lean","muscular","goatee","pale","large","small","spot","tattoo","burnt"];
+
+  const invalidNames = [
+    "me","him","her","them","they","he","she","i","we","you","my","your",
+    "man","woman","person","guy","boy","girl","knife","gun","road","market","station"
+  ];
+
+  const namePatterns = [
+    /name\s+is\s+([A-Z][a-z]+)/g,
+    /name\s+might\s+be\s+([A-Z][a-z]+)/g,
+    /name\s+could\s+be\s+([A-Z][a-z]+)/g,
+    /called\s+([A-Z][a-z]+)/g,
+    /shouted\s+([A-Z][a-z]+)/g,
+    /known\s+as\s+([A-Z][a-z]+)/g
+  ];
+
+  namePatterns.forEach(pattern=>{
+    let match;
+    while((match = pattern.exec(statement)) !== null){
+      let foundName = match[1];
+      let lower = foundName.toLowerCase();
+
+      if(!invalidNames.includes(lower) && !suspects.some(s=>s.name.toLowerCase()===lower)){
+        suspects.push({
+          name: foundName,
+          reason: "Detected from name pattern in statement",
+          location: null,
+          traits: []
+        });
+      }
+    }
+  });
+
+  sentences.forEach(sentence=>{
+    traitKeywords.forEach(trait=>{
+      if(sentence.toLowerCase().includes(trait)) traits.push(trait);
+    });
+
+    locationKeywords.forEach(loc=>{
+      if(sentence.toLowerCase().includes(loc)) locations.push(loc);
+    });
+  });
+
+  traits=[...new Set(traits)];
+  locations=[...new Set(locations)];
+
+  if(suspects.length===0 && traits.length>0){
+    suspects.push({
+      name:"Unknown Individual",
+      reason:"Described by traits",
+      location:locations[0]||null,
+      traits:[...traits]
+    });
+  }
+
+  suspects.forEach(s=>{
+    s.location = locations[0] || s.location || null;
+    s.traits = [...traits];
+  });
+
+  caseData.RLE={suspects,locations,traits};
+  return caseData;
+}
+
+function FCI(caseData){
+    let suspects = caseData.RLE?.suspects || [];
+    let baseScore = 10;
+
+    suspects.forEach((s, index) => {
+        let score = baseScore + s.traits.length*5 + (s.location?5:0) + index*2 + (s.name!=="Unknown Individual"?5:0);
+
+        if(caseData.predictedCrime){
+            let match = s.traits.some(trait => caseData.predictedCrime.toLowerCase().includes(trait.toLowerCase()));
+            if(match){
+                
+                score *= 1 + (caseData.predictedCrimeScore || 0)/10; 
+            }
+        }
+
+        s.evidenceScore = Math.round(score);
+    });
+
+    caseData.FCI = {
+        suspects,
+        totalScore: suspects.reduce((acc,s)=>acc+s.evidenceScore,0)
+    };
+
+    return caseData;
+}
+
+function EAS(caseData){
+    if(!caseData.RLE?.suspects) return caseData;
+
+    let totalEvidence = 0;
+    let highPrioritySuspects = [];
+
+    caseData.RLE.suspects.forEach(s => {
+        let weight = 1;
+
+        if(s.traits.length) weight += 0.2*s.traits.length;
+        if(s.location) weight += 0.3;
+        if(s.interviewStatement) weight += 0.5;
+        if(s.alibiWeak) weight += 0.4;
+        if(s.contradictions?.length) weight += 0.5;
+
+        if(caseData.predictedCrimeScore){
+            weight += (caseData.predictedCrimeScore / 20); 
+        }
+
+        s.finalScore = Math.round((s.evidenceScore || 10) * weight);
+        totalEvidence += s.finalScore;
+
+        if(s.finalScore >= 40) highPrioritySuspects.push(s.name);
+    });
+
+    caseData.EAS = { totalEvidenceScore: totalEvidence, highPrioritySuspects };
+    return caseData;
+}
+
+function generateEvidenceSummary(caseData) {
+    let evidence = [];
+
+   
+    if (caseData.TCI && caseData.TCI.issues.length) {
+        caseData.TCI.issues.forEach(i => {
+            evidence.push("TCI Issue: " + i);
+        });
+    }
+
+
+    if (caseData.TCA && caseData.TCA.contradictions.length) {
+        caseData.TCA.contradictions.forEach(c => {
+            evidence.push("TCA Contradiction: " + c);
+        });
+    }
+
+    
+    if (caseData.RLE && caseData.RLE.extractedFacts) {
+        caseData.RLE.extractedFacts.forEach(f => {
+            evidence.push("Extracted Fact: " + f);
+        });
+    }
+
+  
+    if (caseData.FCI && caseData.FCI.inconsistencies) {
+        caseData.FCI.inconsistencies.forEach(i => {
+            evidence.push("Fact Inconsistency: " + i);
+        });
+    }
+
+
+    if (caseData.FAS && caseData.FAS.finalFindings) {
+        caseData.FAS.finalFindings.forEach(f => {
+            evidence.push("Final Finding: " + f);
+        });
+    }
+
+    caseData.evidenceSummary = evidence;
+    return caseData;
+}
+
+function policeQuestionEngine(){
+  if(!caseData.stage) caseData.stage = "interview";
+
+  if(caseData.TCI?.issues?.length){
+    caseData.stage = "contradiction";
+    return "Your FIR has contradictions: " + caseData.TCI.issues.join(" | ") + ". Please clarify correct details.";
+  }
+
+  if(caseData.TCA?.contradictions?.length){
+    caseData.stage = "contradiction";
+    return "Contradiction found between FIR and statement: " + caseData.TCA.contradictions.join(" | ") + ". Which is correct?";
+  }
+
+  if(!caseData.RLE?.suspects || caseData.RLE.suspects.length===0){
+    caseData.stage = "suspect_discovery";
+    return "No suspects identified. Did the victim mention any name, relationship, or dispute?";
+  }
+
+  if(caseData.stage === "interview"){
+    let pending = caseData.RLE.suspects.find(s=>!s.interviewStatement);
+    if(pending){
+      return `Interview suspect ${pending.name}: Where were you during the incident time (${caseData.Date || "Unknown Date"} ${caseData.Time || ""})? Provide alibi.`;
+    } else {
+      caseData.stage = "evidence";
+    }
+  }
+
+  if(caseData.stage === "evidence"){
+    if(!caseData.externalEvidence){
+      return "All suspects interviewed. Do you have CCTV evidence, call records, or witness names to verify alibis?";
+    } else {
+      caseData.stage = "analysis";
+    }
+  }
+
+  if(caseData.stage === "analysis"){
+    return "Evidence recorded. Type FINAL to generate ranking or type RECHECK to re-check suspects.";
+  }
+
+  if(caseData.stage === "final"){
+    return "Final ranking generated. Investigation complete.";
+  }
+
+  return "Investigation ongoing. Provide more inputs.";
+}
+
+function updateFromPoliceAnswer(answer){
+  answer = answer.trim();
+  if(!answer) return;
+
+  if(!caseData.StatementUsed) caseData.StatementUsed = "";
+  caseData.StatementUsed += " " + answer;
+
+  if(caseData.stage === "analysis"){
+    if(answer.toLowerCase().includes("final")){
+      caseData.stage = "final";
+      return;
+    }
+    if(answer.toLowerCase().includes("recheck")){
+      caseData.stage = "interview";
+      caseData.externalEvidence = null;
+      return;
+    }
+  }
+
+  if(caseData.stage === "evidence"){
+    caseData.externalEvidence = answer;
+    caseData.stage = "analysis";
+    return;
+  }
+
+  let pendingIndex = caseData.RLE.suspects.findIndex(s=>!s.interviewStatement);
+  if(pendingIndex !== -1){
+    let suspect = caseData.RLE.suspects[pendingIndex];
+    suspect.interviewStatement = answer;
+
+    if(answer.toLowerCase().includes("alone")){
+      suspect.alibiWeak = true;
+      suspect.contradictions = suspect.contradictions || [];
+      suspect.contradictions.push("Weak alibi: claims alone.");
+    }
+  }
+}
+
+
 /* execute investigation */
 
 async function execute(){
