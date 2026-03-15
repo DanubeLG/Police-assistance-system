@@ -1,177 +1,217 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="{{ url_for('static', filename='styles (1).css') }}">
-<title>ANVESHAN INTELLIGENCE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles (1).css') }}">
+  <title>ANVESHAN INTELLIGENCE</title>
 </head>
 
 <body>
 
-<div class="layout">
+  <div class="layout">
 
-<div class="side">
-<ol id="y"></ol>
-</div>
+    <div class="side">
+      <ol id="y"></ol>
+    </div>
 
-<div class="center">
+    <div class="center">
+      <div class="form-box">
 
-<div class="form-box">
+        <h2 style="text-align:center;">Hi, please fill out these details</h2>
 
-<h2 style="text-align:center;">Hi, please fill out these details</h2>
+        <ol id="details">
+          <li>Complainant Name: <input id="complainantName"></li>
+          <li>Spouse/Dependent name: <input id="HusbandName"></li>
+          <li>DOB: <input type="date" id="dob"></li>
+          <li>Nationality: <input id="nation"></li>
+          <li>Occupation: <input></li>
+          <li>Age: <input type="number" min="13" id="age"></li>
 
-<ol id="details">
+          <li>Gender:
+            <select id="gender">
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </li>
 
-<li>Complainant Name: <input id="complainantName"></li>
+          <li>Address: <input id="address"></li>
+          <li>Phone: <input type="tel" pattern="\+91[0-9]{10}" placeholder="+911234567890" required></li>
 
-<li>Spouse/Dependent name: <input id="HusbandName"></li>
+          <li>Weapon Used: 
+          <select id="weaponUsed">
+          <option value="">Select</option>
+          <option>Knife</option>
+          <option>Gun</option>
+          <option>Rope</option>
+          <option>Acid</option>
+          <option>Dumbbell</option>
+          <option>Poison</option>
+          <option>Other</option>
+         </select>
+         </li>
+          
+         
+          <li>Date: <input type="date" id="date"></li>
+          <li>Start Time: <input type="time" id="startTime"></li>
+          <li>End Time: <input type="time" id="endTime"></li>
 
-<li>DOB: <input type="date" id="dob"></li>
+          <li>Time (Morning/Afternoon...): <input id="timeCategory"></li>
+          <li>Place of Incident: <input id="place"></li>
 
-<li>Nationality: <input id="nation"></li>
+          <li>Location of Incident: <input id="location"></li>
+          <li>Type of Incident:
+          <select id="incidentType">
+          <option value="">Select</option>
+          <option>Theft</option>
+          <option>Robbery</option>
+          <option>Assault</option>
+          <option>Murder</option>
+          <option>Kidnapping</option>
+          <option>Domestic Violence</option>
+          <option>Fraud</option>
+          <option>Other</option>
+        </select>
+         </li>
 
-<li>Occupation: <input></li>
+        </ol>
 
-<li>Age: <input type="number" min="13" id="age"></li>
+        <h3>FIR Details</h3>
+        <textarea id="firDetails"></textarea>
 
-<li>Gender:
-<select id="gender">
-<option value="">Select</option>
-<option>Male</option>
-<option>Female</option>
-<option>Other</option>
-</select>
-</li>
+        <h3>Is the victim alive?</h3>
+        <select id="victimAlive">
+          <option value="">Select</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+          <option value="probably">Probably</option>
+        </select>
 
-<li>Address: <input id="address"></li>
+        <div id="dynamicSection"></div>
+        <div id="suspectInterviewSection"></div>
 
-<li>Phone: <input type="tel" pattern="\+91[0-9]{10}" placeholder="+911234567890"></li>
+        <button id="x" onclick="create()">Generate FIR</button>
+        <button id="v" onclick="caseController()">Run Investigation</button>
 
-<li>Weapon Used:
-<select id="weaponUsed">
-<option value="">Select</option>
-<option>Knife</option>
-<option>Gun</option>
-<option>Rope</option>
-<option>Acid</option>
-<option>Dumbbell</option>
-<option>Poison</option>
-<option>Other</option>
-</select>
-</li>
+        <div id="output"></div>
 
-<li>Date: <input type="date" id="date"></li>
+      </div>
+    </div>
 
-<li>Start Time: <input type="time" id="startTime"></li>
+    <div class="side">
+      <div class="profile-box">
+        <img id="ds" style="border-radius:50px;"><br><br>
 
-<li>End Time: <input type="time" id="endTime"></li>
+        <b>Name:</b>
+        <p id="k"></p>
 
-<li>Location of Incident: <input id="location"></li>
+        <b>📞:</b>
+        <p id="l"></p>
 
-<li>Type of Incident:
-<select id="incidentType">
-<option value="">Select</option>
-<option>Theft</option>
-<option>Robbery</option>
-<option>Assault</option>
-<option>Murder</option>
-<option>Kidnapping</option>
-<option>Domestic Violence</option>
-<option>Fraud</option>
-<option>Other</option>
-</select>
-</li>
+        <b>✉:</b>
+        <p id="m"></p>
 
-</ol>
+        <b>Signature:</b><br><br>
+        <img id="de">
+      </div>
+    </div>
 
-<h3>FIR Details</h3>
-<textarea id="firDetails"></textarea>
+  </div>
 
-<h3>Is the victim alive?</h3>
+  <div id="dis">
+    <input type="text" id="chatInput">
+    <button onclick="caseController()">→</button>
+  </div>
 
-<select id="victimAlive">
-<option value="">Select</option>
-<option value="yes">Yes</option>
-<option value="no">No</option>
-<option value="probably">Probably</option>
-</select>
 
-<div id="dynamicSection"></div>
+  <div class="footer">
+    Anveshan Intelligence can make mistakes, please use it carefully.
+  </div>
 
-<div id="suspectInterviewSection"></div>
+  <button class="menu-btn" onclick="openMenu()">
+  ☰
+</button>
 
-<button onclick="create()">Generate FIR</button>
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-<button onclick="caseController()">Run Investigation</button>
+<div id="sideMenu" class="side-menu">
+  <div class="menu-header">
+    <h2>ANVESHAN</h2>
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
 
-<div id="output"></div>
-
-</div>
-</div>
-
-<div class="side">
-
-<div class="profile-box">
-
-<img id="ds" style="border-radius:50px;"><br><br>
-
-<b>Name:</b>
-<p id="k"></p>
-
-<b>📞:</b>
-<p id="l"></p>
-
-<b>✉:</b>
-<p id="m"></p>
-
-<b>Signature:</b><br><br>
-
-<img id="de">
-
-</div>
-
-</div>
-
-</div>
-
-<div id="dis">
-
-<input type="text" id="chatInput">
-
-<button onclick="caseController()">→</button>
-
-</div>
-
-<div class="footer">
-
-Anveshan Intelligence can make mistakes, please use it carefully.
-
+  <a href="#">New chat</a>
+  <a href="#">Save chat</a>
+  <a href="#">Delete chat</a>
+  <a href="#">View history</a>
+  <a href="#">Change password</a>
+  <a href="#">Change profilepic</a>
+  <a href="#">Notifications</a>
+  <a href="#">Help</a>
+  <a href="#">About us</a>
+  <a href="#">Logout</a>
+  
+  
 </div>
 
 </body>
 </html>
 
 <script>
+  function openMenu(){
+  document.getElementById("sideMenu").style.left = "0";
+  document.getElementById("overlay").style.display = "block";
+  document.querySelector(".menu-btn").style.display = "none";
+ }
 
-/* =========================================
-NAIVE BAYES MODEL
-========================================= */
+function closeMenu(){
+  document.getElementById("sideMenu").style.left = "-320px";
+  document.getElementById("overlay").style.display = "none";
+  document.querySelector(".menu-btn").style.display = "block";
+ }
 
-let nbModel = {}
+let el1=document.getElementById("ds");
+let el2=document.getElementById("de");
+let el3=document.getElementById("k");
+let el4=document.getElementById("l");
+let el5=document.getElementById("m");
+  
 
-let encoders = {
+let img1=localStorage.getItem("profilePic");
+let img2=localStorage.getItem("signaturePic");
+let n1=localStorage.getItem("username1");
+let n2=localStorage.getItem("username2");
+let n3=localStorage.getItem("username3");
+
+el1.src=img1;
+el2.src=img2;
+el3.innerText=n1;
+el4.innerText=n2;
+el5.innerText=n3;
+
+let issues = [];
+let nbModel={ total:0 }
+  
+let caseData = {};
+let policeMode = { active: false };
+
+let nbModel={}
+
+let encoders={
 city:{},
 gender:{},
 weapon:{},
 crime:{}
 }
 
-let decoders = {
+let decoders={
 crime:{}
 }
 
 function preprocess(v){
-if(v===undefined || v===null) return "unknown"
+if(!v) return "unknown"
 return String(v).trim().toLowerCase()
 }
 
@@ -179,12 +219,11 @@ function encode(label,type){
 
 if(!(label in encoders[type])){
 
-let id = Object.keys(encoders[type]).length
-
-encoders[type][label] = id
+let id=Object.keys(encoders[type]).length
+encoders[type][label]=id
 
 if(type==="crime"){
-decoders.crime[id] = label
+decoders.crime[id]=label
 }
 
 }
@@ -258,6 +297,8 @@ ageVar,
 total
 }
 
+console.log("Model trained with",total,"records")
+
 }
 
 function gaussian(x,mean,varr){
@@ -276,9 +317,9 @@ city=preprocess(city)
 gender=preprocess(gender)
 weapon=preprocess(weapon)
 
-let cityE=encoders.city[city] ?? -1
-let genderE=encoders.gender[gender] ?? -1
-let weaponE=encoders.weapon[weapon] ?? -1
+let cityE=encoders.city[city]??-1
+let genderE=encoders.gender[gender]??-1
+let weaponE=encoders.weapon[weapon]??-1
 
 let bestCrime=null
 let bestScore=-Infinity
@@ -311,26 +352,69 @@ score:bestScore
 
 }
 
-/* =========================================
-MAIN FIR + INVESTIGATION SYSTEM
-========================================= */
+/* ============================
+LOAD DATASET
+============================ */
 
-let caseData={}
-let policeMode={active:false}
+async function loadCrimeDataset(){
 
-function addHistory(text){
+let res=await fetch("crime_dataset.csv")
 
-let ol=document.getElementById("y")
+let text=await res.text()
 
-let li=document.createElement("li")
+let rows=text.trim().split("\n")
 
-li.style.color="white"
+let data=rows.slice(1).map(r=>{
 
-li.innerText=text
+let cols=r.split(",")
 
-ol.appendChild(li)
+return{
+"City":cols[0],
+"Victim Age":Number(cols[1]),
+"Victim Gender":cols[2],
+"Weapon Used":cols[3],
+"Crime Description":cols[4]
+}
+
+})
+
+trainNB(data)
 
 }
+
+window.onload=loadCrimeDataset
+
+
+function addHistory(text){
+  let ol = document.getElementById("y");
+  let li = document.createElement("li");
+  li.style.color = "white";
+  li.innerText = text;
+  ol.appendChild(li);
+}
+
+document.getElementById("victimAlive").addEventListener("change", function() {
+  let status = this.value;
+  let section = document.getElementById("dynamicSection");
+
+  if (status === "yes") {
+    section.innerHTML = `
+      <h3>Victim Statement</h3>
+      <textarea id="victimStatement"></textarea>
+    `;
+  } 
+  else if (status === "no") {
+    section.innerHTML = `
+      <h3>Who filed the FIR on behalf of the victim?</h3>
+      <input type="text" id="firFiler">
+      <h3>Enter that person's statement</h3>
+      <textarea id="proxyStatement"></textarea>
+    `;
+  }
+  else {
+    section.innerHTML = "";
+  }
+});
 
   function getCurrentDateTime() {
     const now = new Date();
@@ -516,7 +600,7 @@ function create() {
 
     } else {
 
-      contradictions.push("Weapon mismatch between FIR and statement.");
+      issues.push("Weapon mismatch between FIR and statement.");
       return false;
     }
 
@@ -528,6 +612,10 @@ function create() {
 }
 
   function create3(){
+
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+    
 doc.setFont("helvetica", "normal");
 
 doc.setFontSize(16);
@@ -579,9 +667,6 @@ y += 12;
 doc.setFontSize(12);
 doc.text("4. FIR Summary", 14, y);
 doc.setFontSize(11);
-
-y += 8;
-doc.text(name11, 20, y);
 
 y += 12;
 doc.setFontSize(12);
@@ -714,7 +799,6 @@ alert("Investigation report created successfully");}
 async function TCI(caseData) {
 
   let fir = (caseData.FIR || "").toLowerCase();
-  let issues = [];
 
   let place = document.getElementById("place")?.value || "";
   let location = document.getElementById("location")?.value || "";
@@ -1080,24 +1164,45 @@ function updateFromPoliceAnswer(answer){
 }
 
 function renderOutput(){
+  const outputDiv=document.getElementById("output");
+  if(!caseData) return;
 
-let out=document.getElementById("output")
+  let suspectsHtml = "None";
 
-out.innerHTML=`
+  if(caseData.RLE?.suspects?.length){
+    suspectsHtml = caseData.RLE.suspects.map(s=>`
+      <p>
+        <b>Name:</b> ${s.name}<br>
+        <b>Reason:</b> ${s.reason}<br>
+        <b>Location:</b> ${s.location || "Unknown"}<br>
+        <b>Traits:</b> ${s.traits.join(", ") || "None"}<br>
+        <b>Evidence Score (FCI):</b> ${s.evidenceScore || 0}<br>
+        <b>Final Score (EAS):</b> ${s.finalScore || 0}<br>
+        <b>Interview:</b> ${s.interviewStatement ? "Provided" : "Pending"}<br>
+        <b>Contradictions:</b> ${(s.contradictions||[]).join(", ") || "None"}<br>
+      </p>
+      <hr>
+    `).join("");
+  }
 
-<h3>Investigation Result</h3>
+  outputDiv.innerHTML = `
+    <h3>Investigation Report</h3>
+    <p><b>TCI:</b> ${caseData.TCI?.status || "N/A"}</p>
+    <p><b>TCA:</b> ${caseData.TCA?.status || "N/A"}</p>
 
-<p><b>Predicted Crime:</b> ${caseData.predictedCrime || "Unknown"}</p>
+    <h4>Suspects Identified:</h4>
+    ${suspectsHtml}
 
-<p><b>Prediction Score:</b> ${caseData.predictedCrimeScore || "N/A"}</p>
+    <p><b>Total Case Evidence Score:</b> ${caseData.EAS?.totalEvidenceScore || 0}</p>
+    <p><b>High-Priority Suspects:</b> ${caseData.EAS?.highPrioritySuspects?.join(", ") || "None"}</p>
 
-`
-
+    <hr>
+    <h4>Next Police Question</h4>
+    <p>${policeQuestionEngine()}</p>
+  `;
 }
 
-
-  
-  function SIM(){
+function SIM(){
   if(!caseData.RLE?.suspects) return;
 
   const section=document.getElementById("suspectInterviewSection");
@@ -1189,121 +1294,75 @@ async function updatePipeline() {
     renderOutput();
 }
 
-async function updatePipeline() {
-    let oldSuspects = caseData.RLE?.suspects
-        ? JSON.parse(JSON.stringify(caseData.RLE.suspects))
-        : [];
+async function execute() {
+    let fir = document.getElementById("firDetails").value.trim();
+    let victimAlive = document.getElementById("victimAlive").value;
 
-  
-    caseData = await TCI(caseData);
-    caseData = TCA(caseData);
-    caseData = RLE(caseData);
-
-    if (oldSuspects.length > 0) {
-        caseData.RLE.suspects = mergeSuspects(oldSuspects, caseData.RLE.suspects);
+    if (!fir || !victimAlive) {
+        alert("Complete required fields.");
+        return;
     }
 
-    if (nbModel.total) { 
-  
-        let prediction = predictCrime(
-            caseData.Location || "unknown",
-            Number(document.getElementById("age")?.value || 30),
-            document.getElementById("gender")?.value || "unknown",
-            caseData.Weapon || "unknown"
-        );
+    let statementToCompare = "", firFiler = "";
 
-        caseData.predictedCrime = prediction.crime;
-        caseData.predictedCrimeScore = prediction.score;
+    if (victimAlive === "yes") {
+        statementToCompare = document.getElementById("victimStatement")?.value.trim() || "";
     }
-    caseData = FCI(caseData);
-    caseData = EAS(caseData);
 
-    localStorage.setItem("Current_Case", JSON.stringify(caseData));
+    if (victimAlive === "no") {
+        firFiler = document.getElementById("firFiler")?.value.trim() || "";
+        statementToCompare = document.getElementById("proxyStatement")?.value.trim() || "";
+    }
 
-    SIM();
-    renderOutput();
+    
+    caseData = {
+        FIR: fir,
+        VictimAlive: victimAlive,
+        FIR_Filer: firFiler,
+        StatementUsed: statementToCompare,
+        Date: document.getElementById("date")?.value || "",
+        Time: document.getElementById("startTime")?.value || "",
+        Weapon: document.getElementById("weaponUsed")?.value || "",
+        Location: document.getElementById("location")?.value || "",
+        IncidentType: document.getElementById("incidentType")?.value || ""
+    };
+
+    await updatePipeline();
 }
 
+async function caseController() {
+    let chatAnswer = document.getElementById("chatInput").value.trim();
+    let normalized = chatAnswer.toLowerCase();
 
-/* execute investigation */
+    if (!policeMode.active) {
+        await execute(); 
+        policeMode.active = true;
+        addHistory("SYSTEM: Case file created. Investigation started.");
+        addHistory("POLICE: " + policeQuestionEngine());
+        document.getElementById("chatInput").value = "";
+        return;
+    }
 
-async function execute(){
+    if (chatAnswer) {
+        addHistory("USER: " + chatAnswer);
+        updateFromPoliceAnswer(chatAnswer);
+        document.getElementById("chatInput").value = "";
 
-let fir=document.getElementById("firDetails").value.trim()
+        if (caseData.stage === "final" && ["yes", "report", "generate"].includes(normalized)) {
+            if (typeof create3 === "function") create3(); 
+            await updatePipeline();
+            addHistory("POLICE: Investigation complete. Final ranking generated.");
+            return;
+        }
 
-let victimAlive=document.getElementById("victimAlive").value
-
-if(!fir || !victimAlive){
-
-alert("Complete required fields")
-
-return
-
-}
-
-caseData={
-FIR:fir,
-VictimAlive:victimAlive,
-Date:document.getElementById("date").value,
-Time:document.getElementById("startTime").value,
-Weapon:document.getElementById("weaponUsed").value,
-Location:document.getElementById("location").value
-}
-
-/* AI prediction */
-
-if(nbModel.total){
-
-let prediction=predictCrime(
-
-caseData.Location || "unknown",
-
-Number(document.getElementById("age").value || 30),
-
-document.getElementById("gender").value,
-
-caseData.Weapon || "unknown"
-
-)
-
-caseData.predictedCrime=prediction.crime
-caseData.predictedCrimeScore=prediction.score
-
-}
-
-renderOutput()
-
-}
-
-/* display result */
-/* main controller */
-
-async function caseController(){
-
-let chatAnswer=document.getElementById("chatInput").value.trim()
-
-if(!policeMode.active){
-
-await execute()
-
-policeMode.active=true
-
-addHistory("SYSTEM: Case file created.")
-
-document.getElementById("chatInput").value=""
-
-return
-
-}
-
-if(chatAnswer){
-
-addHistory("USER: "+chatAnswer)
-
-document.getElementById("chatInput").value=""
-
-}
-
+        await updatePipeline(); 
+        addHistory("POLICE: " + policeQuestionEngine());
+    }
 }
 
 </script>
+
+
+
+
+
