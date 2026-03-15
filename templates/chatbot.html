@@ -3,7 +3,7 @@
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles (1).css') }}">
+  <link rel="stylesheet" href="styles(1).css">
   <title>ANVESHAN INTELLIGENCE</title>
 </head>
 
@@ -49,6 +49,9 @@
           <option>Acid</option>
           <option>Dumbbell</option>
           <option>Poison</option>
+          <option>Bat</option>
+          <option>Stick</option>
+          <option>trophy</option>
           <option>Other</option>
          </select>
          </li>
@@ -122,7 +125,7 @@
 
   <div id="dis">
     <input type="text" id="chatInput">
-    <button onclick="caseController()">→</button>
+    <button class="x" onclick="caseController()">→</button>
   </div>
 
 
@@ -157,7 +160,6 @@
 </div>
 
 </body>
-</html>
 
 <script>
   function openMenu(){
@@ -197,8 +199,7 @@ let nbModel={ total:0 }
 let caseData = {};
 let policeMode = { active: false };
 
-let nbModel={}
-
+   
 let encoders={
 city:{},
 gender:{},
@@ -328,11 +329,11 @@ for(let crime in nbModel.crimeCounts){
 
 let prior=Math.log(nbModel.crimeCounts[crime]/nbModel.total)
 
-let cityProb=Math.log((nbModel.cityCounts[crime][cityE]||1)/nbModel.crimeCounts[crime])
+let cityProb=Math.log(((nbModel.cityCounts[crime]||{})[cityE]||1)/nbModel.crimeCounts[crime])
 
-let genderProb=Math.log((nbModel.genderCounts[crime][genderE]||1)/nbModel.crimeCounts[crime])
+let genderProb=Math.log(((nbModel.genderCounts[crime]||{})[genderE]||1)/nbModel.crimeCounts[crime])
 
-let weaponProb=Math.log((nbModel.weaponCounts[crime][weaponE]||1)/nbModel.crimeCounts[crime])
+let weaponProb=Math.log(((nbModel.weaponCounts[crime]||{})[weaponE]||1)/nbModel.crimeCounts[crime])
 
 let ageProb=Math.log(gaussian(age,nbModel.ageMean[crime],nbModel.ageVar[crime]))
 
@@ -352,13 +353,22 @@ score:bestScore
 
 }
 
-/* ============================
-LOAD DATASET
-============================ */
+function accuracyScore(actual,predicted){
 
+let correct=0
+
+for(let i=0;i<actual.length;i++){
+if(actual[i]===predicted[i]){
+correct++
+}
+}
+
+return (correct/actual.length)*100
+
+}
 async function loadCrimeDataset(){
 
-let res=await fetch("crime_dataset.csv")
+let res=await fetch("crime_dataset_india.csv")
 
 let text=await res.text()
 
@@ -366,7 +376,7 @@ let rows=text.trim().split("\n")
 
 let data=rows.slice(1).map(r=>{
 
-let cols=r.split(",")
+let cols=r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
 
 return{
 "City":cols[0],
@@ -380,9 +390,28 @@ return{
 
 trainNB(data)
 
-}
+let actual=[]
+let predicted=[]
 
-window.onload=loadCrimeDataset
+data.forEach(row=>{
+
+let result=predictCrime(
+row["City"],
+row["Victim Age"],
+row["Victim Gender"],
+row["Weapon Used"]
+)
+
+actual.push(preprocess(row["Crime Description"]))
+predicted.push(preprocess(result.crime))
+
+})
+
+let acc=accuracyScore(actual,predicted)
+
+console.log("Naive Bayes Model Accuracy:",acc.toFixed(2)+"%")
+
+}
 
 
 function addHistory(text){
@@ -436,7 +465,9 @@ function create() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    let name1=document.getElementById("complainantName").value;
+   caseData.FIR = document.getElementById("firDetails").value;
+
+   let name1=document.getElementById("complainantName").value;
     
     let name2=document.getElementById("date").value;
     
@@ -455,7 +486,7 @@ function create() {
     let name9=document.getElementById("age").value;
 
     let name10=document.getElementById("HusbandName").value;
-    
+
   
     doc.setFont("helvetica", "normal");
 
@@ -600,7 +631,7 @@ function create() {
 
     } else {
 
-      issues.push("Weapon mismatch between FIR and statement.");
+      issues.push("location mismatch between place and location.");
       return false;
     }
 
@@ -615,6 +646,37 @@ function create() {
 
 const { jsPDF } = window.jspdf;
 const doc = new jsPDF();
+
+ let name1=document.getElementById("complainantName").value;
+    
+ let name2=document.getElementById("date").value;
+    
+ let name3=document.getElementById("startTime").value;
+    
+ let name4=document.getElementById("endTime").value;
+    
+ let name5=document.getElementById("address").value;
+    
+ let name6=document.getElementById("HusbandName").value;
+    
+ let name7=document.getElementById("dob").value;
+    
+ let name8=document.getElementById("nation").value;
+    
+ let name9=document.getElementById("age").value;
+
+ let name10=document.getElementById("HusbandName").value;
+
+localStorage.setItem("name1",name1);
+localStorage.setItem("name2",name2);
+localStorage.setItem("name3",name3);
+localStorage.setItem("name4",name4);
+localStorage.setItem("name5",name5);
+localStorage.setItem("name6",name6);
+localStorage.setItem("name7",name7);
+localStorage.setItem("name8",name8);
+localStorage.setItem("name9",name9);
+localStorage.setItem("name10",name10);
     
 doc.setFont("helvetica", "normal");
 
@@ -721,7 +783,6 @@ doc.setFontSize(11);
 
 y += 8;
 
-/* Collect evidence automatically */
 
 let evidence = [];
 
@@ -799,6 +860,7 @@ alert("Investigation report created successfully");}
 async function TCI(caseData) {
 
   let fir = (caseData.FIR || "").toLowerCase();
+  issues = [];
 
   let place = document.getElementById("place")?.value || "";
   let location = document.getElementById("location")?.value || "";
@@ -845,10 +907,10 @@ async function TCI(caseData) {
     }
   }
 
-  let weapons = ["knife","gun","rope","acid","dumbell","stick","stone"];
+  let weapons = ["knife","gun","rope","acid","dumbbell","stick","stone"];
 
   weapons.forEach(w=>{
-    if(caseData.Weapon && fir.includes(w) && caseData.Weapon.toLowerCase() !== w){
+   if(caseData.Weapon && fir.includes(w) && caseData.Weapon.toLowerCase() !== w){
       issues.push("Weapon in FIR text contradicts selected weapon.");
     }
   });
@@ -869,8 +931,6 @@ async function TCI(caseData) {
   return caseData;
 }
 
-
-
 function TCA(caseData){
 
   let fir = (caseData.FIR || "").toLowerCase();
@@ -880,7 +940,7 @@ function TCA(caseData){
 
   if(statement){
 
-    let weapons = ["knife","gun","rope","acid","dumbell","stick","stone"];
+    let weapons = ["knife","gun","rope","acid","dumbbell","stick","stone","poison","bat","trophy"];
 
     let firWeapon = weapons.find(w => fir.includes(w));
     let statementWeapon = weapons.find(w => statement.includes(w));
@@ -906,12 +966,14 @@ function TCA(caseData){
 
   return caseData;
 }
+
 function RLE(caseData){
+
   let statement = caseData.StatementUsed || "";
-  let suspects=[], locations=[], traits=[];
+  let suspects=[], locations=[], traits=[], similarities=[];
 
   if(!statement){
-    caseData.RLE={suspects,locations,traits};
+    caseData.RLE={suspects,locations,traits,similarities};
     return caseData;
   }
 
@@ -931,7 +993,7 @@ function RLE(caseData){
     /name\s+could\s+be\s+([A-Z][a-z]+)/g,
     /called\s+([A-Z][a-z]+)/g,
     /shouted\s+([A-Z][a-z]+)/g,
-    /known\s+as\s+([A-Z][a-z]+)/g
+    /known\s+as\s+([A-Za-z]+)/gi
   ];
 
   namePatterns.forEach(pattern=>{
@@ -952,6 +1014,7 @@ function RLE(caseData){
   });
 
   sentences.forEach(sentence=>{
+
     traitKeywords.forEach(trait=>{
       if(sentence.toLowerCase().includes(trait)) traits.push(trait);
     });
@@ -959,10 +1022,37 @@ function RLE(caseData){
     locationKeywords.forEach(loc=>{
       if(sentence.toLowerCase().includes(loc)) locations.push(loc);
     });
+
   });
 
   traits=[...new Set(traits)];
   locations=[...new Set(locations)];
+
+
+  function simpleSim(a,b){
+
+    let wordsA = a.toLowerCase().split(/\s+/);
+    let wordsB = b.toLowerCase().split(/\s+/);
+
+    let common = wordsA.filter(w => wordsB.includes(w));
+
+    return common.length / Math.max(wordsA.length,wordsB.length);
+
+  }
+
+  for(let i=0;i<sentences.length-1;i++){
+
+    let score = simpleSim(sentences[i],sentences[i+1]);
+
+    if(score > 0.65){
+      similarities.push({
+        sentence1: sentences[i].trim(),
+        sentence2: sentences[i+1].trim(),
+        score: score
+      });
+    }
+
+  }
 
   if(suspects.length===0 && traits.length>0){
     suspects.push({
@@ -978,7 +1068,12 @@ function RLE(caseData){
     s.traits = [...traits];
   });
 
-  caseData.RLE={suspects,locations,traits};
+  caseData.RLE = caseData.RLE || {};
+  caseData.RLE.suspects = suspects.length ? suspects : caseData.RLE.suspects || [];
+  caseData.RLE.locations = locations;
+  caseData.RLE.traits = traits;
+  caseData.RLE.similarities = similarities;
+
   return caseData;
 }
 
@@ -1038,15 +1133,14 @@ function EAS(caseData){
 }
 
 function generateEvidenceSummary(caseData) {
+
     let evidence = [];
 
-   
     if (caseData.TCI && caseData.TCI.issues.length) {
         caseData.TCI.issues.forEach(i => {
             evidence.push("TCI Issue: " + i);
         });
     }
-
 
     if (caseData.TCA && caseData.TCA.contradictions.length) {
         caseData.TCA.contradictions.forEach(c => {
@@ -1054,28 +1148,20 @@ function generateEvidenceSummary(caseData) {
         });
     }
 
-    
-    if (caseData.RLE && caseData.RLE.extractedFacts) {
-        caseData.RLE.extractedFacts.forEach(f => {
-            evidence.push("Extracted Fact: " + f);
+    if (caseData.RLE && caseData.RLE.suspects) {
+        caseData.RLE.suspects.forEach(s => {
+            evidence.push("Suspect Identified: " + s.name);
         });
     }
 
-  
-    if (caseData.FCI && caseData.FCI.inconsistencies) {
-        caseData.FCI.inconsistencies.forEach(i => {
-            evidence.push("Fact Inconsistency: " + i);
-        });
-    }
-
-
-    if (caseData.FAS && caseData.FAS.finalFindings) {
-        caseData.FAS.finalFindings.forEach(f => {
-            evidence.push("Final Finding: " + f);
+    if (caseData.EAS && caseData.EAS.highPrioritySuspects.length) {
+        caseData.EAS.highPrioritySuspects.forEach(s => {
+            evidence.push("High Priority Suspect: " + s);
         });
     }
 
     caseData.evidenceSummary = evidence;
+
     return caseData;
 }
 
@@ -1159,6 +1245,8 @@ function updateFromPoliceAnswer(answer){
       suspect.alibiWeak = true;
       suspect.contradictions = suspect.contradictions || [];
       suspect.contradictions.push("Weak alibi: claims alone.");
+
+    if(!caseData.RLE || !caseData.RLE.suspects) return
     }
   }
 }
@@ -1200,26 +1288,6 @@ function renderOutput(){
     <h4>Next Police Question</h4>
     <p>${policeQuestionEngine()}</p>
   `;
-}
-
-function SIM(){
-  if(!caseData.RLE?.suspects) return;
-
-  const section=document.getElementById("suspectInterviewSection");
-  section.innerHTML="<h3>Suspect Interviews</h3>";
-
-  caseData.RLE.suspects.forEach((s,index)=>{
-    section.innerHTML += `
-      <div class="suspect-section">
-        <b>Suspect ${index+1}: ${s.name}</b><br><br>
-
-        <label>Interview Statement:</label><br>
-        <textarea id="suspectStmt_${index}" placeholder="Enter statement for ${s.name}">${s.interviewStatement || ""}</textarea><br>
-
-        <button onclick="saveInterview(${index})">Save Statement</button>
-      </div>
-    `;
-  });
 }
 
 function saveInterview(index){
@@ -1290,7 +1358,6 @@ async function updatePipeline() {
 
     localStorage.setItem("Current_Case", JSON.stringify(caseData));
 
-    SIM();
     renderOutput();
 }
 
@@ -1298,11 +1365,7 @@ async function execute() {
     let fir = document.getElementById("firDetails").value.trim();
     let victimAlive = document.getElementById("victimAlive").value;
 
-    if (!fir || !victimAlive) {
-        alert("Complete required fields.");
-        return;
-    }
-
+  
     let statementToCompare = "", firFiler = "";
 
     if (victimAlive === "yes") {
@@ -1331,38 +1394,56 @@ async function execute() {
 }
 
 async function caseController() {
+
     let chatAnswer = document.getElementById("chatInput").value.trim();
     let normalized = chatAnswer.toLowerCase();
 
     if (!policeMode.active) {
-        await execute(); 
+
+        let fir = document.getElementById("firDetails").value.trim();
+        let victimAlive = document.getElementById("victimAlive").value;
+
+        if (!fir || !victimAlive) {
+            alert("Complete required fields.");
+            return;
+        }
+
+        await execute();
+
         policeMode.active = true;
+
         addHistory("SYSTEM: Case file created. Investigation started.");
         addHistory("POLICE: " + policeQuestionEngine());
+
         document.getElementById("chatInput").value = "";
         return;
     }
 
     if (chatAnswer) {
-        addHistory("USER: " + chatAnswer);
-        updateFromPoliceAnswer(chatAnswer);
-        document.getElementById("chatInput").value = "";
 
-        if (caseData.stage === "final" && ["yes", "report", "generate"].includes(normalized)) {
-            if (typeof create3 === "function") create3(); 
-            await updatePipeline();
-            addHistory("POLICE: Investigation complete. Final ranking generated.");
-            return;
-        }
+    addHistory("USER: " + chatAnswer);
 
-        await updatePipeline(); 
-        addHistory("POLICE: " + policeQuestionEngine());
+    updateFromPoliceAnswer(chatAnswer);
+
+    document.getElementById("chatInput").value = "";
+
+    if (caseData.stage === "final" && ["yes", "report", "generate"].includes(normalized)) {
+
+        if (typeof create3 === "function") create3();
+
+        await updatePipeline();
+
+        addHistory("POLICE: Investigation complete. Final ranking generated.");
+
+        return;
     }
+
+    await updatePipeline();
+
+    addHistory("POLICE: " + policeQuestionEngine());
+ }
 }
-
+window.onload = function(){
+  loadCrimeDataset();
+}
 </script>
-
-
-
-
-
