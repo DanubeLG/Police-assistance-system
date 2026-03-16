@@ -590,19 +590,15 @@ function create() {
    alert("pdf successfully created");
   }
 
-
   async function validatePlaceInLocation(place, location) {
-
   if (!place || !location) {
     alert("Please enter both place and location");
     return false;
   }
 
-  const url =
-   `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(place)}`;
+  const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(place)}`;
 
   try {
-
     const res = await fetch(url, {
       headers: { "User-Agent": "FIR-System" }
     });
@@ -617,31 +613,35 @@ function create() {
     const address = data[0].address;
 
     const hierarchy = [
-      address.city,
-      address.town,
+      address.road,
+      address.pedestrian,
+      address.residential,
+      address.quarter,
+      address.neighbourhood,
+      address.suburb,
+      address.hamlet,
       address.village,
+      address.town,
+      address.city,
       address.county,
       address.state,
       address.country
     ].filter(Boolean).map(x => x.toLowerCase());
 
-    if (hierarchy.includes(location.toLowerCase())) {
-
-      return true;
-
+    if (hierarchy.some(h => h.includes(location.toLowerCase()))) {
+      return true; 
     } else {
-
-      issues.push("location mismatch between place and location.");
+      issues.push("Location mismatch between place and location.");
       return false;
     }
 
   } catch (error) {
-
+    console.error("Error validating location:", error);
     alert("Error validating location");
     return false;
   }
 }
-
+ 
   function create3(){
 
 const { jsPDF } = window.jspdf;
@@ -667,16 +667,16 @@ const doc = new jsPDF();
 
  let name10=document.getElementById("HusbandName").value;
 
-localStorage.setItem("name1",name1);
-localStorage.setItem("name2",name2);
-localStorage.setItem("name3",name3);
-localStorage.setItem("name4",name4);
-localStorage.setItem("name5",name5);
-localStorage.setItem("name6",name6);
-localStorage.setItem("name7",name7);
-localStorage.setItem("name8",name8);
-localStorage.setItem("name9",name9);
-localStorage.setItem("name10",name10);
+ localStorage.setItem("name1",name1);
+ localStorage.setItem("name2",name2);
+ localStorage.setItem("name3",name3);
+ localStorage.setItem("name4",name4);
+ localStorage.setItem("name5",name5);
+ localStorage.setItem("name6",name6);
+ localStorage.setItem("name7",name7);
+ localStorage.setItem("name8",name8);
+ localStorage.setItem("name9",name9);
+ localStorage.setItem("name10",name10);
     
 doc.setFont("helvetica", "normal");
 
@@ -862,22 +862,22 @@ async function TCI(caseData) {
   let fir = (caseData.FIR || "").toLowerCase();
   issues = [];
 
-  let place = document.getElementById("place")?.value || "";
-  let location = document.getElementById("location")?.value || "";
+  let place = document.getElementById("place").value || "";
+  let location = document.getElementById("location").value || "";
 
   await validatePlaceInLocation(place, location);
 
-  let dob = document.getElementById("dob")?.value;
-  let age = document.getElementById("age")?.value;
+  let dob = document.getElementById("dob").value;
+  let age = document.getElementById("age").value;
 
   if(dob && age){
-    let birthYear = new Date(dob).getFullYear();
-    let currentYear = new Date().getFullYear();
-    let calculatedAge = currentYear - birthYear;
-
-    if(Math.abs(calculatedAge - age) > 1){
-      issues.push("Age does not match the provided DOB.");
-    }
+   let today = new Date();
+   let birthDate = new Date(dob);
+   let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+   let m = today.getMonth() - birthDate.getMonth();
+   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+   calculatedAge--;
+}
   }
 
   let timeCategory = document.getElementById("timeCategory")?.value;
