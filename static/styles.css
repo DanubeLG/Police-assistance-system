@@ -1,39 +1,73 @@
 div {
-  width: 500px;
-  height: 500px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-  background-color:#FFFFFF;
+  width: 400px; 
+  padding: 40px 30px;
+  box-shadow: 0 15px 25px rgba(0,0,0,0.2), 0 10px 10px rgba(0,0,0,0.14);
+  background-color: #ffffff;
   font-weight: bold;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Moves it back by half its own width AND height */
+  transform: translate(-50%, -50%);
+  border-radius: 12px; 
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
 button {
-  /* 1. Spacing & Size */
-  padding: 12px 24px;
+  padding: 12px 30px;
   font-size: 16px;
-  cursor: pointer; /* Makes the mouse turn into a hand */
-
-  /* 2. Colors */
-  background-color: #C3B091; /* A nice "Action Blue" */
+  cursor: pointer;
+  border: none; 
+  border-radius: 6px;
+  background-color: #C3B091;
   color: white;
-
-  /* 4. Animation */
-  transition: background-color 0.3s ease;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
 }
 
-body{
-  background-color:#C3B091;}
-
- 
-
-/* 5. The Hover State */
 button:hover {
-  background-color: #0056b3; /* Darkens slightly when you hover */
+  background-color: #a48c6d; 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 15px rgba(0,0,0,0.2);
 }
 
-div.b{
-  font-size:20px;}
-img.g{
-  right:100%;}
+body {
+  background-color: #C3B091;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+div.b {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+img.g {
+  position: absolute;
+  right: 10%; 
+  top: 10%;
+  max-width: 80px;
+  border-radius: 50%;
+}
+
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0 20px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+  border-color: #C3B091;
+  outline: none;
+}
