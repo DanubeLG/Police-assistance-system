@@ -39,7 +39,7 @@ overflow-y:auto;
 #y{
 list-style:none;
 padding:0;
-margin:0;
+margin-top:16px;
 }
 
 #y li{
@@ -157,6 +157,11 @@ align-items:center;
 z-index:100;
 }
 
+#binput{
+width: 50px;
+height: 40px
+}
+
 #chatInput{
 width:600px;
 background:#f5efe2;
@@ -184,7 +189,7 @@ border-top:1px solid rgba(0,0,0,0.15);
 }
 
  .menu-btn{
-  position: fixed;
+  position: absolute;
   background: transparent;
   top: 20px;
   left: 20px;
