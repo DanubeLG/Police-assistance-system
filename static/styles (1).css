@@ -168,6 +168,8 @@ background:#f5efe2;
 padding:12px;
 border-radius:25px;
 border:1px solid var(--border);
+margin-bottom:-10px;
+margin-right: 0px;
 font-size:14px;
 }
 
